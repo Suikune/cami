@@ -97,32 +97,58 @@
 		//武器技能定义（【类型，基础值，等级增益】未有明确数据的，等级增益设为0）
 		//**** 日文改英文 ****/
 		var weaponSkillMap = {
-			"Character ATK↑": ["assault", 0, 0.5],
-			"Character ATK↑(+)": ["assault", 3, 0.5],
-			"Character ATK↑(++)": ["assault", 6, 0.5],
-			"Character Max HP↑": ["defender", 0, 0.5],
-			"Character Max HP↑(+)": ["defender", 3, 0.5],
-			"Character Max HP↑(++)": ["defender", 6, 0.5],
-			"character Max HP↑ (++++)": ["defender", 10, 1],
+			"Character ATK↑ (+)": ["assault", 0, 0.5],
+			"Character ATK↑ (++)": ["assault", 3, 0.5],
+			"Character ATK↑ (+++)": ["assault", 6, 0.5],
+			"Character ATK↑ (++++)": ["assault", 9, 0.7],
+			"Character Max HP↑ (+)": ["defender", 0, 0.5],
+			"Character Max HP↑ (++)": ["defender", 3, 0.5],
+			"Character Max HP↑ (+++)": ["defender", 6, 0.5],
+			"Character Max HP↑ (++++)": ["defender", 10, 1],
+			"Characters HP↑ (++++)": ["defender", 9, 0.7],
 			"ATK↑": ["ambition", 10, 1],
-			"Characters with low HP, ATK↑": ["pride", 0, 0.35, 11.4],	//小：0.35×SLv+12*(1-HP/MHP)	浮动0%~11.4%
-			"Characters with low HP, ATK↑(+)": ["pride", 0, 0.5, 11.4],		//中：0.5×SLv+12*(1-HP/MHP)		浮动0%~11.4%
-			"Characters with low HP, ATK↑(++)": ["pride", 0, 0.5, 19],
-			"属性キャラクターの二段攻撃確率UP(小)": ["rush", 0, 0],
-			"属性キャラクターの二段攻撃確率UP(中)": ["rush", 1, 0],
-			"属性キャラクターの二段攻撃確率UP(大)": ["rush", 2, 0],
-			"属性キャラクターの三段攻撃確率UP(小)": ["barrage", 0, 0],
-			"属性キャラクターの三段攻撃確率UP(中)": ["barrage", 1, 0],
-			"属性キャラクターの三段攻撃確率UP(大)": ["barrage", 2, 0],
-			"属性キャラクターの急所攻撃確率UP(小)": ["stinger", 0, 0],
-			"属性キャラクターの急所攻撃確率UP(中)": ["stinger", 1, 0],
-			"属性キャラクターの急所攻撃確率UP(大)": ["stinger", 2, 0],
-			"属性キャラクターのバースト性能UP(小)": ["exceed", 0, 1],
-			"属性キャラクターのバースト性能UP(中)": ["exceed", 10, 1],
-			"属性キャラクターのバースト性能UP(大)": ["exceed", 20, 1],
-			"属性キャラクターの回復性能UP(小)": ["ascension", 4, 1],
-			"属性キャラクターの回復性能UP(中)": ["ascension", 7, 1],
-			"属性キャラクターの回復性能UP(大)": ["ascension", 10, 1]
+			"Characters with low HP, ATK↑ (+)": ["pride", 0, 0.35, 11.4],	//小：0.35×SLv+12*(1-HP/MHP)	浮动0%~11.4%
+			"Characters with low HP, ATK↑ (++)": ["pride", 0, 0.5, 11.4],		//中：0.5×SLv+12*(1-HP/MHP)		浮动0%~11.4%
+			"Characters with low HP, ATK↑ (+++)": ["pride", 0, 0.5, 19],
+			"characters left HP ratio (+)": ["vigoras", 0, 0],
+			"characters left HP ratio (++)": ["vigoras", 1, 0],
+			"characters left HP ratio (+++)": ["vigoras", 2, 0],
+			"Characters' HP ＆ ATK↑ commensurate to low HP (+)": ["stewart", 0, 0.35, 11.4, 0, 0.5],
+			"Characters' HP ＆ ATK↑ commensurate to low HP (++)": ["stewart", 0, 0.5, 11.4, 3, 0.5],
+			"Characters' HP ＆ ATK↑ commensurate to low HP (+++)": ["stewart", 0, 0.5, 19, 6, 0.5],
+			"Characters' Recovery↑ commensurate to HP (+)": ["sprout", 0, 0, 4, 1],
+			"Characters' Recovery↑ commensurate to HP (++)": ["sprout", 1, 0, 7, 1],
+			"Characters' Recovery↑ commensurate to HP (+++)": ["sprout", 2, 0, 10, 1],
+			"Characters' Combo Attack Rate↑ (+)": ["avalanche", 0, 0],
+			"Characters' Combo Attack Rate↑ (++)": ["avalanche", 1, 0],
+			"Characters' Combo Attack Rate↑ (+++)": ["avalanche", 2, 0],
+			"Characters' HP ＆ Recovery↑ (+)": ["grace", 0, 0.5, 4, 1],
+			"Characters' HP ＆ Recovery↑ (++)": ["grace", 3, 0.5, 7, 1],
+			"Characters' HP ＆ Recovery↑ (+++)": ["grace", 6, 0.5, 10, 1],
+			"characters HP ＆ ATK↑ (+)": ["strength", 0, 0.5],
+			"characters HP ＆ ATK↑ (++)": ["strength", 3, 0.5],
+			"characters HP ＆ ATK↑ (+++)": ["strength", 6, 0.5],
+			"Characters' ATK ＆ Recovery↑ (+)": ["resilience", 0, 0.5, 4, 1],
+			"Characters' ATK ＆ Recovery↑ (++)": ["resilience", 3, 0.5, 7, 1],
+			"Characters' ATK ＆ Recovery↑ (+++)": ["resilience", 6, 0.5, 10, 1],
+			"Characters' ATK ＆ Crit rate↑ (+)": ["slug", 0, 0, 0, 0.5],
+			"Characters' ATK ＆ Crit rate↑ (++)": ["slug", 1, 0, 3, 0.5],
+			"Characters' ATK ＆ Crit rate↑ (+++)": ["slug", 2, 0, 6, 0.5],
+			"Characters' Double Attack Rate↑ (+)": ["rush", 0, 0],
+			"Characters' Double Attack Rate↑ (++)": ["rush", 1, 0],
+			"Characters' Double Attack Rate↑ (+++)": ["rush", 2, 0],
+			"Characters' Triple Attack Rate↑ (+)": ["barrage", 0, 0],
+			"Characters' Triple Attack Rate↑ (++)": ["barrage", 1, 0],
+			"Characters' Triple Attack Rate↑ (+++)": ["barrage", 2, 0],
+			"Characters Crit rate↑ (+)": ["stinger", 0, 0],
+			"Characters Crit rate↑ (++)": ["stinger", 1, 0],
+			"Characters Crit rate↑ (+++)": ["stinger", 2, 0],
+			"Characters Burst↑ (+)": ["exceed", 0, 1],
+			"Characters Burst↑ (++)": ["exceed", 10, 1],
+			"Characters Burst↑ (+++)": ["exceed", 20, 1],
+			"Characters Recovery↑ (+)": ["ascension", 4, 1],
+			"Characters Recovery↑ (++)": ["ascension", 7, 1],
+			"Characters Recovery↑ (+++)": ["ascension", 10, 1]
 		};
 
 		//首饰稀有度最高等级
@@ -422,16 +448,22 @@
 									var skillLevel = sk.level;
 									var descArray = sk.description.split("\n");	//取第一行
 									var description = descArray[0];
-									var elemIndex0 = description.indexOf("Character");//*"属性"改为"Character"
+									var elemIndex0 = description.toLocaleLowerCase().indexOf("character");//*"属性"改为"Character"
 									var elemIndex;
 									var description;
 									if (elemIndex0 == -1) {
-										elemIndex = description.indexOf("ATK");//*属攻
-										var endIndex = elemIndex + 4;
-										description = description.slice(elemIndex, endIndex);
+										if (description.indexOf("commensurate") > -1) {
+											description = descArray[1];
+											elemIndex = description.toLocaleLowerCase().indexOf("character");
+											description = description.slice(elemIndex);
+										} else {
+											elemIndex = description.indexOf("ATK");//*属攻
+											var endIndex = elemIndex + 4;
+											description = description.slice(elemIndex, endIndex);
+										}
 									}
 									else {
-										elemIndex = description.indexOf("Character");
+										elemIndex = description.toLocaleLowerCase().indexOf("character");
 										description = description.slice(elemIndex);
 									}
 									skillData = weaponSkillMap[description];
@@ -454,6 +486,9 @@
 										calItem.stinger = 0;
 										calItem.stinger1 = 0;
 										calItem.stinger2 = 0;
+										calItem.vigoras = 0;
+										calItem.vigoras1 = 0;
+										calItem.vigoras2 = 0;
 										calItem.exceed = 0;
 										calItem.ascension = 0;
 										calMap[type] = calItem;
@@ -511,6 +546,15 @@
 													calItem.stinger2 += skillLevel;
 												}
 												break;
+											case "vigoras":
+												if (baseNum == 0) {
+													calItem.vigoras += skillLevel;
+												} else if (baseNum == 1) {
+													calItem.vigoras1 += skillLevel;
+												} else {
+													calItem.vigoras2 += skillLevel;
+												}
+												break;
 											//爆裂性能
 											case "exceed":
 												calItem.exceed += baseNum + powWeight * skillLevel;
@@ -519,6 +563,56 @@
 											case "ascension":
 												calItem.ascension += baseNum + powWeight * skillLevel;
 												break;
+											case "stewart":
+												var prideRange = skillData[3];
+												calItem.prideLow += baseNum + powWeight * skillLevel;
+												calItem.prideHigh += baseNum + powWeight * skillLevel + prideRange;
+												calItem.defender += skillData[4] + skillData[5] * skillLevel;
+												break;
+											case "sprout":
+												if (baseNum == 0) {
+													calItem.vigoras += skillLevel;
+												} else if (baseNum == 1) {
+													calItem.vigoras1 += skillLevel;
+												} else {
+													callitem.vigoras2 += skillLevel;
+												}
+												calItem.ascension += skillData[3] + skillData[4] * skillLevel;
+												break;
+											case "avalanche":
+												if (baseNum == 0) {
+													calItem.barrage += skillLevel;
+													calItem.rush += skillLevel;
+												} else if (baseNum == 1) {
+													calItem.barrage1 += skillLevel;
+													calItem.rush1 += skillLevel;
+												} else {
+													calItem.barrage2 += skillLevel;
+													calItem.rush2 += skillLevel;
+												}
+												break;
+											case "grace":
+												calItem.defender += baseNum + powWeight * skillLevel;
+												calItem.ascension += skillData[3] + skillData[4] * skillLevel;
+												break;
+											case "strength":
+												calItem.assault += baseNum + powWeight * skillLevel;
+												calItem.defender += baseNum + powWeight * skillLevel;
+												break;
+											case "resilience":
+												calItem.assault += baseNum + powWeight * skillLevel;
+												calItem.ascension += skillData[3] + skillData[4] * skillLevel;
+												break;
+											case "slug":
+												if (baseNum == 0) {
+													calItem.stinger += skillLevel;
+												} else if (baseNum == 1) {
+													calItem.stinger1 += skillLevel;
+												} else {
+													calItem.stinger2 += skillLevel;
+												}
+												calItem.assault += skillData[3] + skillData[4] * skillLevel;
+												break;
 										}
 									}
 								}
@@ -526,49 +620,38 @@
 						}
 						for (var key in calMap) {
 							var calItem = calMap[key];
-							var str = calItem.name + "系:Character ATK+" + calItem.assault + "%<br> HP+" + calItem.defender + "%";
+							var str = calItem.name == "Phantom" ? "" : calItem.name + "系:Character ATK+" + calItem.assault + "%<br> HP+" + calItem.defender + "%";
 							if (calItem.ambition > 0) {
 								str += "<br>" + calItem.name + "ATK+" + calItem.ambition + "%";
 							}
 							if (calItem.prideHigh > 0) {
-								str += "<br>Pride+" + calItem.prideLow + "%~" + calItem.prideHigh + "%";
+								str += "<br>Pride+" + calItem.prideLow.toFixed(2) + "%~" + calItem.prideHigh.toFixed(2) + "%";
 							}
-							if (calItem.rush > 0) {
-								str += ",二连(小)Lv" + calItem.rush;
+							if (calItem.rush > 0 || calItem.rush1 > 0 || calItem.rush2 > 0) {
+								str += "<br>DA " + (calItem.rush * 0.05 + calItem.rush1 * 0.15 + calItem.rush2 * 0.25) + "%";
 							}
-							if (calItem.rush1 > 0) {
-								str += ",二连(中)Lv" + calItem.rush1;
+							if (calItem.barrage > 0 || calItem.barrage1 > 0 || calItem.barrage2 > 0) {
+								str += "<br>TA " + (calItem.barrage * 0.05 + calItem.barrage1 * 0.1 + calItem.barrage2 * 0.15) + "%";
 							}
-							if (calItem.rush2 > 0) {
-								str += ",二连(大)Lv" + calItem.rush2;
+							if (calItem.stinger > 0 || calItem.stinger1 > 0 || calItem.stinger2 > 0) {
+								str += "<br>Crit " + (calItem.stinger * 0.5 + (3 + calItem.stinger1 * 0.5) + (6 + calItem.stinger2 * 0.5)) + "%";
 							}
-							if (calItem.barrage > 0) {
-								str += ",三连(小)Lv" + calItem.barrage;
-							}
-							if (calItem.barrage1 > 0) {
-								str += ",三连(中)Lv" + calItem.barrage1;
-							}
-							if (calItem.barrage2 > 0) {
-								str += ",三连(大)Lv" + calItem.barrage2;
-							}
-							if (calItem.stinger > 0) {
-								str += ",急所(小)Lv" + calItem.stinger;
-							}
-							if (calItem.stinger1 > 0) {
-								str += ",急所(中)Lv" + calItem.stinger1;
-							}
-							if (calItem.stinger2 > 0) {
-								str += ",急所(大)Lv" + calItem.stinger2;
+							if (calItem.vigoras > 0 || calItem.vigoras1 > 0 || calItem.vigoras2 > 0) {
+								str += "<br>Vigoras " + (
+									(calItem.vigoras > 0 ? ((8 + calItem.vigoras * 0.2) - Math.pow(8 + calItem.vigoras * 0.2, 0.5)) : 0) +
+									(calItem.vigoras1 > 0 ? ((12 + calItem.vigoras1 * 0.2) - Math.pow(12 + calItem.vigoras1 * 0.2, 0.5)) : 0) +
+									(calItem.vigoras2 > 0 ? ((16 + calItem.vigoras2 * 0.2) - Math.pow(16 + calItem.vigoras2 * 0.2, 0.5)) : 0)
+								).toFixed(2) + "%";
 							}
 							if (calItem.exceed > 0) {
-								str += ",爆裂性能+" + calItem.exceed + "%";
+								str += "<br>Burst DMG " + calItem.exceed + "%";
 							}
 							if (calItem.ascension > 0) {
-								str += ",恢复性能+" + calItem.ascension + "%";
+								str += "<br>Heal " + calItem.ascension + "%";
 							}
 							mypageLog(str);
 						}
-						drawWeaponSkill(e.body.deck.weapons);
+						// drawWeaponSkill(e.body.deck.weapons);
 					}).fail(function () {
 						mypageLog("计算出错或网络请求失败");
 					});
