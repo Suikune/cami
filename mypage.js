@@ -143,9 +143,9 @@
 			"Characters Crit rate↑ (+)": ["stinger", 0, 0],
 			"Characters Crit rate↑ (++)": ["stinger", 1, 0],
 			"Characters Crit rate↑ (+++)": ["stinger", 2, 0],
-			"Characters Burst↑ (+)": ["exceed", 10, 1],
-			"Characters Burst↑ (++)": ["exceed", 20, 1],
-			"Characters Burst↑ (+++)": ["exceed", 30, 1],
+			"Characters Burst↑ (+)": ["exceed", 0, 1],
+			"Characters Burst↑ (++)": ["exceed", 10, 1],
+			"Characters Burst↑ (+++)": ["exceed", 20, 1],
 			"Characters Recovery↑ (+)": ["ascension", 4, 1],
 			"Characters Recovery↑ (++)": ["ascension", 7, 1],
 			"Characters Recovery↑ (+++)": ["ascension", 10, 1]
@@ -634,11 +634,7 @@
 								str += "<br>TA " + (calItem.barrage * 0.05 + calItem.barrage1 * 0.1 + calItem.barrage2 * 0.15) + "%";
 							}
 							if (calItem.stinger > 0 || calItem.stinger1 > 0 || calItem.stinger2 > 0) {
-								str += "<br>Crit " + (
-									(calItem.stinger > 0 ? calItem.stinger * 0.5 : 0) +
-									(calItem.stinger1 > 0 ? 3 + calItem.stinger1 * 0.5 : 0) +
-									(calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
-									) + "%";
+								str += "<br>Crit " + (calItem.stinger * 0.5 + (3 + calItem.stinger1 * 0.5) + (6 + calItem.stinger2 * 0.5)) + "%";
 							}
 							if (calItem.vigoras > 0 || calItem.vigoras1 > 0 || calItem.vigoras2 > 0) {
 								str += "<br>Vigoras " + (
