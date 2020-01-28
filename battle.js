@@ -151,12 +151,35 @@ var processServerResponseQueue = [];
 var actionPromises = [];
 
 var enemy_priority_list = [
-    "Prison of Fire Catastrophe", "Blaze Type Calamity β",
+    // Fire rag
+    "Prison of Fire Catastrophe",
+    "Blaze Type Calamity α",
+    "Blaze Type Calamity β",
+
+    // Water rag
     "Frostbite Type Calamity γ",
-    "Storm Type Calamity β", "Storm Type Calamity α",
-    "Abyss Type Calamity α", "Abyss Type Calamity β",
-    "Luminescent Type Calamity β", "Luminescent Type Calamity α",
-    "Abyssal Doppelganger",
+    "Prison of Ice Catastrophe",
+
+    // Wind rag
+    ["Storm Type Calamity α", () => hpPercent("Storm Type Calamity α") <= hpPercent("Storm Type Calamity β") - 20],
+    "Storm Type Calamity β",
+    "Storm Type Calamity α",
+    "Prison of Wind Catastrophe",
+
+    // Thunder rag
+    ["Prison of Lightning Catastrophe", () => isRaging("Prison of Lightning Catastrophe"), () => hpPercent("Lightning Type Calamity γ") < modeGaugePercent("Prison of Lightning Catastrophe") - 10],
+    "Lightning Type Calamity γ",
+    "Prison of Lightning Catastrophe",
+
+    // Light rag
+    "Luminescent Type Calamity β",
+    "Luminescent Type Calamity α",
+    "Prison of Light Catastrophe",
+
+    // Dark rag
+    ["Abyss Type Calamity β", () => !(hpPercent("Abyss Type Calamity β") + 5 <= hpPercent("Abyss Type Calamity α"))],
+    "Abyss Type Calamity α",
+    "Prison of Darkness Catastrophe",
 ];
 
 var elements = ["fire", "water", "wind", "thunder", "light", "dark"];
@@ -1180,13 +1203,26 @@ function performAction() {
 function selectEnemyTarget() {
     var esbl = bw.enemyStatusBarList.filter(Boolean);
     if (esbl.length == 1) return;
-    enemy_priority_list.find(function(t) {
-        for (let i = 0; i < esbl.length; i++) {
-            if (esbl[i]._name != t) continue;
-            if (!esbl[i].isTarget()) esbl[i]._targetEnemy(null, ccui.Widget.TOUCH_ENDED);
-            return true;
+    enemy_priority_list.some(r => {
+        if (typeof r == "string") {
+            let e = esbl.find(t => t._name == r);
+            if (e) {
+                _.invoke(_.compact(bw.enemyStatusBarList), "untarget");
+                ccui.helper.seekWidgetByName(e.ui, kh.ENEMY_STATUS_BAR_ELEMENT_NAMES.TARGET).setVisible(!0);
+                return true;
+            }
+            return false;
         }
-        return false;
+        if (Array.isArray(r)) {
+            let e = esbl.find(t => t._name == r[0]);
+            if (e && r.slice(1).every(t => t())) {
+                _.invoke(_.compact(bw.enemyStatusBarList), "untarget");
+                ccui.helper.seekWidgetByName(e.ui, kh.ENEMY_STATUS_BAR_ELEMENT_NAMES.TARGET).setVisible(!0);
+                return true;
+            }
+            return false;
+        }
+        console.error("Unrecognised rule form for target!" + r);
     });
 }
 
@@ -1609,6 +1645,11 @@ function curHP(n) {
     return c && c.hp;
 }
 
+function hpPercent(n) {
+	let a = getCharacter(n) || getEnemy(n);
+	return a && a.hp / a.maxHp * 100;
+}
+
 function lostHP(n) {
     let c = getCharacter(n);
     return c && (c.maxHp - c.hp);
@@ -1919,6 +1960,11 @@ function getTurn() {
     return bw.turn.turnNumber;
 }
 
+function isRaging(n) {
+	let e = n ? getEnemy(n) : getTarget();
+	if (e) return e.statusPanel._modeGaugeTextRaging.isVisible();
+}
+
 function targetIsRaging() {
     return () => bw.enemyStatusBarList[getTarget()]._modeGaugeTextRaging.isVisible();
 }
@@ -1931,6 +1977,11 @@ function turnsToBossOverdrive() {
     let boss = aliveEnemies().reduce((a, b) => a._avatarData.level > b._avatarData.level ? a : b);
     if (!boss.statusPanel._chargeTurnDotsCount) return 1;
     return boss.statusPanel._chargeTurnDotsCount - boss.statusPanel._chargeTurnDotsActiveCount + 1;
+}
+
+function modeGaugePercent(n) {
+	let e = n ? getEnemy(n) : getTarget();
+	if (e) return e.statusPanel._modeGauge.percent;
 }
 
 function waterRagTrigger() {
