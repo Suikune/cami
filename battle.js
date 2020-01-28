@@ -474,6 +474,7 @@ var party_zeal_buffs = [
     ["Sponsored Love Dance", shouldUsePartyZeal(10, 5)],
     ["Windshear Yorti", shouldUsePartyZeal(10, 2.5)],
     ["Yule Goat", shouldUsePartyZeal(5, 2)],
+    ["Kinshi", shouldUsePartyZeal(5, 2)],
 ];
 
 var party_barrier_buffs = [
@@ -1718,7 +1719,7 @@ function has(obj) {
 // +t BG, -u% hp
 function shouldUsePartyZeal(t, u) {
     return () => {
-        return false;
+        return true;
         // ...
     }
 }
