@@ -1646,8 +1646,8 @@ function curHP(n) {
 }
 
 function hpPercent(n) {
-	let a = getCharacter(n) || getEnemy(n);
-	return a && a.hp / a.maxHp * 100;
+    let a = getCharacter(n) || getEnemy(n);
+    return a && a.hp / a.maxHp * 100;
 }
 
 function lostHP(n) {
@@ -1687,7 +1687,7 @@ function shouldUsePartyCleanse() {
             // 		}
             // 	}
             // }
-            const badStatuses = [10, 11, 12, 16, 17, 18, 22, 25, 26, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 69, 89, 114, 120, 243, 134, 300, 301, 40004];
+            const badStatuses = [10, 11, 12, 16, 17, 18, 22, 25, 26, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 69, 89, 114, 120, 243, 134, 178, 300, 301, 40004];
             return _.filter(bw.statusEffectList, (item) => {
                 return badStatuses.includes(item._id) && _.reduce(item._characters,
                     (sum, curr) => {
@@ -1961,8 +1961,8 @@ function getTurn() {
 }
 
 function isRaging(n) {
-	let e = n ? getEnemy(n) : getTarget();
-	if (e) return e.statusPanel._modeGaugeTextRaging.isVisible();
+    let e = n ? getEnemy(n) : getTarget();
+    if (e) return e.statusPanel._modeGaugeTextRaging.isVisible();
 }
 
 function targetIsRaging() {
@@ -1980,8 +1980,8 @@ function turnsToBossOverdrive() {
 }
 
 function modeGaugePercent(n) {
-	let e = n ? getEnemy(n) : getTarget();
-	if (e) return e.statusPanel._modeGauge.percent;
+    let e = n ? getEnemy(n) : getTarget();
+    if (e) return e.statusPanel._modeGauge.percent;
 }
 
 function waterRagTrigger() {
