@@ -516,7 +516,7 @@ var buffs = [
     ["Entry Crowding", () => burstGauge("Takeminakata") <= 20],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.7],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.5, () => hasBuff("Lugh", "lugh_burst_buff")],
-    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true), () => curHPProp("Azazel [Awakened]") <= 0.7],
+    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true) || curHPProp("Azazel [Awakened]") <= 0.7],
     ["Storm Zeal", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
     [ammo_buffs],
     "Indomitable", [bg_up_buffs],
@@ -829,7 +829,6 @@ var reflect_buffs = [
     ["Laminate Mirror", bigHitWithin(2)],
     ["Parry Command", bigHitWithin(2)],
     ["Pomp and Circumstances", bigHitWithin(2)],
-    ["Revitalize", bigHitWithin(3)],
     ["Exult Combat", bigHitWithin(3)],
 ];
 
