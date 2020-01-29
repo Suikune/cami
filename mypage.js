@@ -1,4 +1,4 @@
-$(function() {
+﻿$(function() {
     var settings = JSON.parse($("#hiddenDiv").text());
     var store = yutil.store;
     var hookMethod = yutil.hookMethod;
@@ -508,6 +508,7 @@ $(function() {
             createEnhanceSRWeapon3Btn();
             createEnhanceRCup5Btn();
             createEnhanceSRWeaponBtn();
+            createEnhanceSR5Btn();
             createEnhanceRCupBtn();
             createEnhanceSRCupBtn();
             createEnhanceRWeaponBtn();
@@ -1400,6 +1401,66 @@ $(function() {
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length == 6) {
                     kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr).then(function(e) {
                         mypageLog("SR武器强化lv1->lv4完毕");
+                        batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
+                    }).fail(playFailHandler);
+                } else {
+                    //执行完毕
+                    mypageLog("执行完毕");
+                }
+            };
+        }
+
+        function createEnhanceSR5Btn() {
+            var enhanceSRWeapon3Btn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>SR level 5</button>");
+            secondLevelMenuDiv.append(enhanceSRWeapon3Btn);
+            enhanceSRWeapon3Btn.click(function() {
+                emptyLog();
+                //获取SR武器和R武器数组
+                mypageLog("开始获取SR武器和R武器信息");
+                var rCupArr = [];
+                var srWeaponArr = [];
+                _http.get({
+                    url: kh.env.urlRoot + "/a_weapons",
+                    json: {
+                        selectable_base_filter: "enhance",
+                        page: 1,
+                        per_page: 500
+                    }
+                }).then(function(e) {
+                    var data = e.body.data;
+                    if (data && data.length > 0) {
+                        _.each(data, function(item, i) {
+                            //过滤SR武器（SR圣杯基础攻击150）
+                            // if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
+                            // 	srWeaponArr.push(item.a_weapon_id);
+                            // }
+                            // //过滤R武器
+                            // if (item.rare == "R" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 100 && !item.is_equipped && !item.is_locked) {
+                            // 	rWeaponArr.push(item.a_weapon_id);
+                            // }
+                            if (item.weapon_id == 6000 && item.rare == "R" && item.skill_level == 5 && item.bonus == 0 && !item.is_equipped && !item.is_locked) {
+                                rCupArr.push(item.a_weapon_id);
+                            }
+                            // //过滤R武器
+                            if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
+                                srWeaponArr.push(item.a_weapon_id);
+                            }
+                        });
+                    }
+                    mypageLog("总计未强化R武器数量" + rCupArr.length);
+                    mypageLog("总计未强化R武器数量" + srWeaponArr.length);
+                    batchEnhanceSRWeapon(srWeaponArr, rCupArr); //批量强化R圣杯
+                }).fail(playFailHandler);
+            });
+
+            //批量强化SR武器
+            function batchEnhanceSRWeapon(targetWeaponArr, weaponArr) {
+                var actTargetWeaponArr = targetWeaponArr.splice(0, 1);
+                var actWeaponArr = weaponArr.splice(0, 1);
+                if (actTargetWeaponArr.length > 0 && actWeaponArr.length > 0) {
+                    var actWeaponArr1 = actWeaponArr.splice(0, 1);
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function(e) {
+                        mypageLog("SR武器强化lv1->lv5完毕");
                         batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
                 } else {
