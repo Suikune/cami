@@ -513,6 +513,7 @@ var ammo_buffs = [
 
 var buffs = [
     ["Insane Shout", () => false],
+    ["Unit Charge", () => !isUsable("Conceptive Thunder"), () => !isUsable("Weakning Spark")],
     ["Entry Crowding", () => burstGauge("Takeminakata") <= 20],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.7],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.5, () => hasBuff("Lugh", "lugh_burst_buff")],
