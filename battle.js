@@ -517,7 +517,6 @@ var buffs = [
     ["Entry Crowding", () => burstGauge("Takeminakata") <= 20],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.7],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.5, () => hasBuff("Lugh", "lugh_burst_buff")],
-    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true) || curHPProp("Azazel [Awakened]") <= 0.7],
     ["Storm Zeal", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
     [ammo_buffs],
     "Indomitable", [bg_up_buffs],
@@ -1036,6 +1035,7 @@ var blocks = [
 ];
 
 var heals = [
+    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true), () => curHPProp("Azazel [Awakened]") <= 0.7],
     quest_type == "prizehunt" ? "Hero's Salvation" : "", [blocks],
     [party_cleanse_abilities, shouldUsePartyCleanse()],
     [revives, shouldUseRevive()],
@@ -1106,6 +1106,8 @@ var rampage_buffs = [
 ];
 
 var just_before_attack_abilities = [
+    ["Conceptive Thunder", () => true],
+    ["Weakning Spark", () => true],
     ["Exult Combat", () => false],
     ["Cremated Scream", () => hasBuff("[Emperor of Hell] Beelzebub", "block_affliction")],
     [paralyse_abilities],
