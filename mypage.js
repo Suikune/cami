@@ -596,15 +596,21 @@
                                     var skillLevel = sk.level;
                                     var descArray = sk.description.split("\n"); //取第一行
                                     var description = descArray[0];
-                                    var elemIndex0 = description.indexOf("Character"); //*"属性"改为"Character"
+                                    var elemIndex0 = description.toLocaleLowerCase().indexOf("character"); //*"属性"改为"Character"
                                     var elemIndex;
                                     var description;
                                     if (elemIndex0 == -1) {
-                                        elemIndex = description.indexOf("ATK"); //*属攻
-                                        var endIndex = elemIndex + 4;
-                                        description = description.slice(elemIndex, endIndex);
+                                        if (description.indexOf("commensurate") > -1) {
+											description = descArray[1];
+											elemIndex = description.toLocaleLowerCase().indexOf("character");
+											description = description.slice(elemIndex);
+										} else {
+											elemIndex = description.indexOf("ATK");//*属攻
+											var endIndex = elemIndex + 4;
+											description = description.slice(elemIndex, endIndex);
+										}
                                     } else {
-                                        elemIndex = description.indexOf("Character");
+                                        elemIndex = description.toLocaleLowerCase().indexOf("character");
                                         description = description.slice(elemIndex);
                                     }
                                     skillData = weaponSkillMap[description];
@@ -627,6 +633,9 @@
                                         calItem.stinger = 0;
                                         calItem.stinger1 = 0;
                                         calItem.stinger2 = 0;
+                                        calItem.vigoras = 0;
+										calItem.vigoras1 = 0;
+										calItem.vigoras2 = 0;
                                         calItem.exceed = 0;
                                         calItem.ascension = 0;
                                         calMap[type] = calItem;
@@ -772,7 +781,11 @@
                                 str += "<br>TA " + (calItem.barrage * 0.05 + calItem.barrage1 * 0.1 + calItem.barrage2 * 0.15) + "%";
                             }
                             if (calItem.stinger > 0 || calItem.stinger1 > 0 || calItem.stinger2 > 0) {
-                                str += "<br>Crit " + (calItem.stinger * 0.5 + (3 + calItem.stinger1 * 0.5) + (6 + calItem.stinger2 * 0.5)) + "%";
+                                str += "<br>Crit " +(
+									(calItem.stinger > 0 ? calItem.stinger * 0.5 : 0) +
+									(calItem.stinger1 > 0 ? 3 + calItem.stinger1 * 0.5 : 0) +
+									(calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
+									) + "%";
                             }
                             if (calItem.vigoras > 0 || calItem.vigoras1 > 0 || calItem.vigoras2 > 0) {
                                 str += "<br>Vigoras " + (
