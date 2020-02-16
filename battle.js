@@ -2594,7 +2594,7 @@ function overrideMethods() {
     //skip A server error occured popup
     replaceMethod(kh.HttpConnection, "_openRetryMessagePopup", () => true, function(e, t) {
         var i = e[3];
-        this.retrySettings.maxCount > i.count ? this._retryAfterMinWait(e, t, this.retrySettings.minWait) : n.postMessage("reload");
+        this.retrySettings.maxCount > i.count ? this._retryAfterMinWait(e, t, this.retrySettings.minWait) : kh.postMessage("reload");
     });
 
 }
