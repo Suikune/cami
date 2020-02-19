@@ -2624,5 +2624,5 @@ function returnToMyPage() {
     return Q.resolve();
 }
 
-setTimeout(returnToMyPage, 300000);
+//setTimeout(returnToMyPage, 300000);
 setTimeout(overrideMethods, 500);
