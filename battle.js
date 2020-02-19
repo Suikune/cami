@@ -319,7 +319,7 @@ var status_effect_ids = {
 
 var summon_buffs = [
     ["Fleurety", someCharDontHave("thunder_resist_debuff", "sb")],
-
+    ["Resheph", someCharDontHave("wind_resist_debuff", "sb")],
     ["Managarmr", someCharDontHave("triple_attack_buff", "sb")],
     ["Icarus", someCharDontHave("triple_attack_buff", "sb")],
     ["Sandalphon", someCharDontHave("triple_attack_buff", "sb")],
@@ -1025,12 +1025,14 @@ var party_heals = [
     ["Transformer Fuse", shouldUsePartyHeal(800, 6)],
     ["Vitality", shouldUsePartyHeal(1000, 6)],
     ["Winds of Prosperity", shouldUsePartyHeal(500, 5)],
-    ["medic", shouldUsePartyHeal(3200, 20)],
+    ["Cleansing Flame", shouldUsePartyHeal(1500, 5)],
+    ["medic", shouldUsePartyHeal(3300, 20)],
 ];
 
 var blocks = [
     ["Perfect Black", () => !hasBuff("Hades [Awakened]", "block_affliction")],
     ["Devil's Kiss", () => !hasBuff("Amon", "block_affliction")],
+    ["Cleansing Flame", () => !hasBuff("[Dazzling Flame] Artemis", "block_affliction"), shouldUsePartyHeal(1600, 7)],
     "Blazing Heart",
 ];
 
