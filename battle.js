@@ -167,7 +167,7 @@ var enemy_priority_list = [
     "Prison of Wind Catastrophe",
 
     // Thunder rag
-    ["Prison of Lightning Catastrophe", () => isRaging("Prison of Lightning Catastrophe"), () => hpPercent("Lightning Type Calamity γ") < modeGaugePercent("Prison of Lightning Catastrophe") - 10],
+    // ["Prison of Lightning Catastrophe", () => isRaging("Prison of Lightning Catastrophe"), () => hpPercent("Lightning Type Calamity γ") < modeGaugePercent("Prison of Lightning Catastrophe") - 10],
     "Lightning Type Calamity γ",
     "Prison of Lightning Catastrophe",
 

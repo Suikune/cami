@@ -155,7 +155,7 @@
         var _http = window.kh.createInstance("HttpConnection");
 
         $("#Cocos2dGameContainer").css("inherit");
-        var con = $("<div style='width:240px;float:right;margin: 5px;'></div>");
+        var con = $("<div id='tabcc' style='width:240px;float:right;margin: 5px;'></div>");
         $("#Cocos2dGameContainer").before(con);
 
         //主菜单div
@@ -602,14 +602,14 @@
                                     var description;
                                     if (elemIndex0 == -1) {
                                         if (description.indexOf("commensurate") > -1) {
-											description = descArray[1];
-											elemIndex = description.toLocaleLowerCase().indexOf("character");
-											description = description.slice(elemIndex);
-										} else {
-											elemIndex = description.indexOf("ATK");//*属攻
-											var endIndex = elemIndex + 4;
-											description = description.slice(elemIndex, endIndex);
-										}
+                                            description = descArray[1];
+                                            elemIndex = description.toLocaleLowerCase().indexOf("character");
+                                            description = description.slice(elemIndex);
+                                        } else {
+                                            elemIndex = description.indexOf("ATK"); //*属攻
+                                            var endIndex = elemIndex + 4;
+                                            description = description.slice(elemIndex, endIndex);
+                                        }
                                     } else {
                                         elemIndex = description.toLocaleLowerCase().indexOf("character");
                                         description = description.slice(elemIndex);
@@ -635,8 +635,8 @@
                                         calItem.stinger1 = 0;
                                         calItem.stinger2 = 0;
                                         calItem.vigoras = 0;
-										calItem.vigoras1 = 0;
-										calItem.vigoras2 = 0;
+                                        calItem.vigoras1 = 0;
+                                        calItem.vigoras2 = 0;
                                         calItem.exceed = 0;
                                         calItem.ascension = 0;
                                         calMap[type] = calItem;
@@ -782,11 +782,11 @@
                                 str += "<br>TA " + (calItem.barrage * 0.05 + calItem.barrage1 * 0.1 + calItem.barrage2 * 0.15) + "%";
                             }
                             if (calItem.stinger > 0 || calItem.stinger1 > 0 || calItem.stinger2 > 0) {
-                                str += "<br>Crit " +(
-									(calItem.stinger > 0 ? calItem.stinger * 0.5 : 0) +
-									(calItem.stinger1 > 0 ? 3 + calItem.stinger1 * 0.5 : 0) +
-									(calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
-									) + "%";
+                                str += "<br>Crit " + (
+                                    (calItem.stinger > 0 ? calItem.stinger * 0.5 : 0) +
+                                    (calItem.stinger1 > 0 ? 3 + calItem.stinger1 * 0.5 : 0) +
+                                    (calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
+                                ) + "%";
                             }
                             if (calItem.vigoras > 0 || calItem.vigoras1 > 0 || calItem.vigoras2 > 0) {
                                 str += "<br>Vigoras " + (
@@ -3031,6 +3031,19 @@
             var img = $("<img src='chrome-extension://" + extensionId + "/img/img" + index + "." + extArr[index - 1] + "' width='240' height='" + heightArr[index - 1] + "'/>");
             logDiv.append(img);
         }
+
+
+        function changeTabStyle(x) {
+            if (x.matches) { // If media query matches
+                document.getElementById('tabcc').style.position = "absolute";
+            } else {
+                document.getElementById('tabcc').style.position = "unset";
+            }
+        }
+
+        var x = window.matchMedia("(max-width: 700px)")
+        changeTabStyle(x) // Call listener function at run time
+        x.addListener(changeTabStyle) // Attach listener function on state changes
 
         //var wrapDiv = $("<div></div>");
         //con.append(wrapDiv);
