@@ -77,18 +77,18 @@
                     let bp = data.battle_bp - info.questPoints.bp;
                     window.useSeeds(info, bp, function() {
                         kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function(e) {
-                            state = e.body;
-                            window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
-                            currentPartyID = 0;
-                            currentSummonID = 0;
+                            if (has(e.body, "cannot_progress_info"))
+                                alert("chon raid khac full me roai");
+                            else
+                                window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
                         }.bind(this));
                     });
                 } else
                     kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function(e) {
-                        state = e.body;
-                        window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
-                        currentPartyID = 0;
-                        currentSummonID = 0;
+                        if (has(e.body, "cannot_progress_info"))
+                                alert("chon raid khac full me roai");
+                            else
+                                window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
                     }.bind(this));
             }
         }
@@ -635,8 +635,6 @@
                                         calItem.stinger1 = 0;
                                         calItem.stinger2 = 0;
                                         calItem.vigoras = 0;
-                                        calItem.vigoras1 = 0;
-                                        calItem.vigoras2 = 0;
                                         calItem.exceed = 0;
                                         calItem.ascension = 0;
                                         calMap[type] = calItem;
@@ -696,11 +694,11 @@
                                                 break;
                                             case "vigoras":
                                                 if (baseNum == 0) {
-                                                    calItem.vigoras += skillLevel;
+                                                    calItem.vigoras += (8 + skillLevel * 0.2) - Math.pow(8 + skillLevel * 0.2, 0.5);
                                                 } else if (baseNum == 1) {
-                                                    calItem.vigoras1 += skillLevel;
+                                                    calItem.vigoras += (12 + skillLevel * 0.2) - Math.pow(12 + skillLevel * 0.2, 0.5);
                                                 } else {
-                                                    calItem.vigoras2 += skillLevel;
+                                                    callitem.vigoras += (16 + skillLevel * 0.2) - Math.pow(16 + skillLevel * 0.2, 0.5)
                                                 }
                                                 break;
                                                 //爆裂性能
@@ -719,11 +717,11 @@
                                                 break;
                                             case "sprout":
                                                 if (baseNum == 0) {
-                                                    calItem.vigoras += skillLevel;
+                                                    calItem.vigoras += (8 + skillLevel * 0.2) - Math.pow(8 + skillLevel * 0.2, 0.5);
                                                 } else if (baseNum == 1) {
-                                                    calItem.vigoras1 += skillLevel;
+                                                    calItem.vigoras += (12 + skillLevel * 0.2) - Math.pow(12 + skillLevel * 0.2, 0.5);
                                                 } else {
-                                                    callitem.vigoras2 += skillLevel;
+                                                    callitem.vigoras += (16 + skillLevel * 0.2) - Math.pow(16 + skillLevel * 0.2, 0.5)
                                                 }
                                                 calItem.ascension += skillData[3] + skillData[4] * skillLevel;
                                                 break;
@@ -788,12 +786,8 @@
                                     (calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
                                 ) + "%";
                             }
-                            if (calItem.vigoras > 0 || calItem.vigoras1 > 0 || calItem.vigoras2 > 0) {
-                                str += "<br>Vigoras " + (
-                                    (calItem.vigoras > 0 ? ((8 + calItem.vigoras * 0.2) - Math.pow(8 + calItem.vigoras * 0.2, 0.5)) : 0) +
-                                    (calItem.vigoras1 > 0 ? ((12 + calItem.vigoras1 * 0.2) - Math.pow(12 + calItem.vigoras1 * 0.2, 0.5)) : 0) +
-                                    (calItem.vigoras2 > 0 ? ((16 + calItem.vigoras2 * 0.2) - Math.pow(16 + calItem.vigoras2 * 0.2, 0.5)) : 0)
-                                ).toFixed(2) + "%";
+                            if (calItem.vigoras > 0 ) {
+                                str += "<br>Vigoras " + calItem.vigoras.toFixed(2) + "%";
                             }
                             if (calItem.exceed > 0) {
                                 str += "<br>Burst DMG " + calItem.exceed + "%";
