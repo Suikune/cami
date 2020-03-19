@@ -10,7 +10,7 @@ var autoStartBattle = !!settings.autoStartBattle;
 var playSafe = !!settings.playSafe;
 // end setting
 
-var attack_delay = 500; // 300+ safe, lower maybe ban 
+var attack_delay = 350; // 300+ safe, lower maybe ban 
 var run_when_non_union = false;
 var use_speed_hacks = true;
 var skip_vs_boss_fight_animation = true;
@@ -53,7 +53,6 @@ var auto_start_aab_quest_types = [
     "guerrilla",
     "epic",
     "prizehunt",
-    "scoreattack"
 ];
 var my_unions_member_array = [];
 
@@ -75,6 +74,7 @@ function skipAnimation() {
     if (quest_type == "event_union_lilim_raid" && !solo) return 2;
     if (quest_type == "guerrilla" && solo) return 2;
     if (quest_type == "prizehunt") return 2;
+    if (quest_type == "scoreattack") return 2;
     if (quest_type == "epic") return 2;
     return 0;
 }
@@ -101,6 +101,7 @@ function getAbilityResponseTimeout() {
     if (quest_type == "event_union_lilim_raid" && solo) return 9000;
     if (quest_type == "event_union_lilim_raid" && !solo) return Infinity;
     if (quest_type == "prizehunt") return 800;
+    if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
     return Infinity;
 }
@@ -122,6 +123,7 @@ function getAttackResponseTimeout() {
     if (quest_type == "event_union_demon_raid" && !paralysed) return 60000; //60000;
     if (quest_type == "event_union_lilim_raid") return 60000;
     if (quest_type == "prizehunt") return 800;
+    if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
     return Infinity;
 }
@@ -161,13 +163,13 @@ var enemy_priority_list = [
     "Prison of Ice Catastrophe",
 
     // Wind rag
-    ["Storm Type Calamity α", () => hpPercent("Storm Type Calamity α") <= hpPercent("Storm Type Calamity β") - 20],
-    "Storm Type Calamity β",
+    ["Storm Type Calamity β", () => hpPercent("Storm Type Calamity β") <= hpPercent("Storm Type Calamity α") - 20],
     "Storm Type Calamity α",
+    "Storm Type Calamity β",
     "Prison of Wind Catastrophe",
 
     // Thunder rag
-    // ["Prison of Lightning Catastrophe", () => isRaging("Prison of Lightning Catastrophe"), () => hpPercent("Lightning Type Calamity γ") < modeGaugePercent("Prison of Lightning Catastrophe") - 10],
+
     "Lightning Type Calamity γ",
     "Prison of Lightning Catastrophe",
 
@@ -324,7 +326,7 @@ var summon_buffs = [
     ["Icarus", someCharDontHave("triple_attack_buff", "sb")],
     ["Sandalphon", someCharDontHave("triple_attack_buff", "sb")],
     ["Kazuki Kazami", someCharDontHave("triple_attack_buff", "sb")],
-    ["Aratoron", someCharDontHave("triple_attack_buff", "sb")],
+    ["Aratron", someCharDontHave("triple_attack_buff", "sb")],
 
     ["Adramelech", someCharDontHave("double_attack_buff", "sb")],
     ["Garuda", someCharDontHave("double_attack_buff", "sb")],
@@ -365,10 +367,12 @@ var summon_buffs = [
     ["Trivia", someCharDontHave("status_resist_buff")],
 
     ["Archangel", targetIsRaging()],
+    ["Ophiel", someCharDontHave("def_buff", "sb")],
     ["Stolas", someCharDontHave("def_buff", "sb")],
     ["Saint Nicholas", someCharDontHave("def_buff", "sb")],
     ["Huanglong", targetIsStunned()],
 
+    "Bethor",
     "Marchosias",
     "Barong", // nullify one affliction for random ally
     "Diabolos (Unleashed)", // special atk up
@@ -393,6 +397,7 @@ var summon_dots = [
 var self_bg_up_buffs_data = [
     ["Miracle Chalice", "Arthur", 100],
     ["Roaring Blaze", "Shingen", 35],
+    ["Esthetic Set", "Arianrod", 100],
     ["Kukira Execution", "Masamune", 25],
     ["Red Charge", "Yukimura", 25],
     ["Hall Ignition", "(Summer's Bloom) Metatron", 100],
@@ -512,11 +517,12 @@ var ammo_buffs = [
 ];
 
 var buffs = [
+    ["Provisional Forest", () => burstGauge("Shingen") >= 5],
     ["Insane Shout", () => false],
     ["Unit Charge", () => !isUsable("Conceptive Thunder"), () => !isUsable("Weakning Spark")],
     ["Entry Crowding", () => burstGauge("Takeminakata") <= 20],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.7],
-    ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.5, () => hasBuff("Lugh", "lugh_burst_buff")],
+    ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.6, () => hasBuff("Lugh", "lugh_burst_buff")],
     ["Storm Zeal", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
     [ammo_buffs],
     "Indomitable", [bg_up_buffs],
@@ -918,7 +924,7 @@ var dmg_reductions = [
 ];
 
 var party_cleanse_abilities = [
-    ["Sunlight Furnace", () => hasBuff("Sol [Awakened]", "recovery_limit_buff")],
+    ["Sunlight Furnace", () => hasBuff("Sol [Awakened]", "recovery_limit_buff"), () => shouldUsePartyHeal(2000, 5)],
     ["Medical Check", () => hasBuff("Dian Cecht", "recovery_limit_buff")],
     "Behemoth",
     "Electric Pulse",
@@ -993,8 +999,8 @@ single_heals.push(["bottle", shouldUseSingleHeal(0.4)]);
 
 // name, heal amount, cooldown
 var party_heals = [
-    ["Hero's Salvation", () => hasBuff("Andromeda", "recovery_limit_buff") && shouldUsePartyHeal(1600, 5)],
-    ["Dark Harvest", () => hasBuff("Osiris", "recovery_limit_buff")],
+    ["Hero's Salvation", () => hasBuff("Andromeda", "recovery_limit_buff"), () => shouldUsePartyHeal(2000, 5)],
+    ["Dark Harvest", () => hasBuff("Osiris", "recovery_limit_buff"), () => shouldUsePartyHeal(1500, 5)],
     ["Hero's Salvation", numParticipantsAtLeast(5)],
     ["Healing Wave", numParticipantsAtLeast(5)],
     ["Cure Water", numParticipantsAtLeast(5)],
@@ -1009,7 +1015,7 @@ var party_heals = [
     ["Fiery Embrace", shouldUsePartyHeal(1200, 6)],
     ["Flowering Treatment", shouldUsePartyHeal(1200, 6)],
     ["Healing Wave", shouldUsePartyHeal(1200, 5)],
-    ["Hero's Salvation", shouldUsePartyHeal(1600, 5)],
+    ["Hero's Salvation", shouldUsePartyHeal(2000, 5)],
     ["Logistic Bellmouth", shouldUsePartyHeal(1200, 8)],
     ["Makina Regenerate", shouldUsePartyHeal(1500, 6)],
     ["Medical Check", shouldUsePartyHeal(1500, 6)],
@@ -1032,12 +1038,13 @@ var party_heals = [
 var blocks = [
     ["Perfect Black", () => !hasBuff("Hades [Awakened]", "block_affliction")],
     ["Devil's Kiss", () => !hasBuff("Amon", "block_affliction")],
-    ["Cleansing Flame", () => !hasBuff("[Dazzling Flame] Artemis", "block_affliction"), shouldUsePartyHeal(1600, 7)],
+    ["Cleansing Flame", () => !hasBuff("[Dazzling Flame] Artemis", "block_affliction"), () => shouldUsePartyHeal(1600, 7)],
     "Blazing Heart",
 ];
 
 var heals = [
     ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true), () => curHPProp("Azazel [Awakened]") <= 0.7],
+    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true), () => burstGauge("Azazel [Awakened]") >= 80],
     quest_type == "prizehunt" ? "Hero's Salvation" : "", [blocks],
     [party_cleanse_abilities, shouldUsePartyCleanse()],
     [revives, shouldUseRevive()],
