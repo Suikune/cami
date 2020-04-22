@@ -54,6 +54,7 @@ var auto_start_aab_quest_types = [
     "epic",
     "prizehunt",
     "free",
+    "main",
 ];
 var my_unions_member_array = [];
 
@@ -78,6 +79,7 @@ function skipAnimation() {
     if (quest_type == "scoreattack") return 2;
     if (quest_type == "epic") return 2;
     if (quest_type == "free") return 2;
+    if (quest_type == "main") return 2;
     return 0;
 }
 
@@ -106,6 +108,7 @@ function getAbilityResponseTimeout() {
     if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
     if (quest_type == "free") return 800;
+    if (quest_type == "main") return 800;
     return Infinity;
 }
 
@@ -129,6 +132,7 @@ function getAttackResponseTimeout() {
     if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
     if (quest_type == "free") return 800;
+    if (quest_type == "main") return 800;
     return Infinity;
 }
 
@@ -1203,6 +1207,7 @@ var actions = [
     [snatch_attack_actions, () => quest_type == "epic" && getMaxEnemyLevel() <= 50],
     [snatch_attack_actions, () => quest_type == "prizehunt" && getMaxEnemyLevel() < 50],
     [snatch_attack_actions, () => quest_type == "free" && getMaxEnemyLevel() <= 1000],
+    [snatch_attack_actions, () => quest_type == "main" && getMaxEnemyLevel() <= 1000],
     [ue_actions, () => quest_type == "event_union_demon_raid"],
     [normal_actions],
 ];
