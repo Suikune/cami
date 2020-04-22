@@ -10,7 +10,7 @@ var autoStartBattle = !!settings.autoStartBattle;
 var playSafe = !!settings.playSafe;
 // end setting
 
-var attack_delay = 350; // 300+ safe, lower maybe ban 
+var attack_delay = 500; // 300+ safe, lower maybe ban 
 var run_when_non_union = false;
 var use_speed_hacks = true;
 var skip_vs_boss_fight_animation = true;
@@ -53,6 +53,7 @@ var auto_start_aab_quest_types = [
     "guerrilla",
     "epic",
     "prizehunt",
+    "free",
 ];
 var my_unions_member_array = [];
 
@@ -61,7 +62,7 @@ function skipAnimation() {
     if (!use_speed_hacks || turnOffHacks()) return 0;
     if (quest_type == "event") return 2;
     if (quest_type == "mission") return 2;
-    if (quest_type == "tower_event") return 0;
+    if (quest_type == "tower_event") return 2;
     if (quest_type == "accessory") return 2;
     if (quest_type == "daily") return 2;
     if (quest_type == "raid" && solo) return 2;
@@ -76,6 +77,7 @@ function skipAnimation() {
     if (quest_type == "prizehunt") return 2;
     if (quest_type == "scoreattack") return 2;
     if (quest_type == "epic") return 2;
+    if (quest_type == "free") return 2;
     return 0;
 }
 
@@ -89,7 +91,7 @@ function getAbilityResponseTimeout() {
     if (!use_speed_hacks || turnOffHacks()) return Infinity;
     if (quest_type == "event") return 9000;
     if (quest_type == "mission") return Infinity;
-    if (quest_type == "tower_event") return Infinity;
+    if (quest_type == "tower_event") return 9000;
     if (quest_type == "accessory") return Infinity;
     if (quest_type == "daily") return 9000;
     if (quest_type == "raid" && solo) return 9000;
@@ -103,6 +105,7 @@ function getAbilityResponseTimeout() {
     if (quest_type == "prizehunt") return 800;
     if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
+    if (quest_type == "free") return 800;
     return Infinity;
 }
 
@@ -113,7 +116,7 @@ function getAttackResponseTimeout() {
     if (!use_speed_hacks || turnOffHacks()) return Infinity;
     if (quest_type == "event") return 60000;
     if (quest_type == "mission") return 60000;
-    if (quest_type == "tower_event") return Infinity;
+    if (quest_type == "tower_event") return 60000;
     if (quest_type == "accessory") return 60000;
     if (quest_type == "daily") return 60000;
     if (quest_type == "raid") return 60000;
@@ -125,6 +128,7 @@ function getAttackResponseTimeout() {
     if (quest_type == "prizehunt") return 800;
     if (quest_type == "scoreattack") return 800;
     if (quest_type == "epic") return 800;
+    if (quest_type == "free") return 800;
     return Infinity;
 }
 
@@ -317,6 +321,7 @@ var status_effect_ids = {
     metatron_countdown: 210,
     lugh_burst_buff: 234,
     azazel_burst_buff: 278,
+    lancer_form: 281,
 };
 
 var summon_buffs = [
@@ -384,6 +389,7 @@ var summon_buffs = [
     "Yam", // applies 200 hp regeneration to all allies
     "Yggdrasil", // applies 200 hp regeneration to all allies
     "Kyu Ei",
+    "Sariel"
 ];
 
 var summon_dots = [
@@ -420,6 +426,7 @@ var self_bg_up_buffs_data = [
     ["Medicinal Power", "Kali", 100],
     ["Groom wrap", "Chernobog", 30],
     ["Grim Reaper", "Thanatos", 25],
+    ["Grim Reaper", "Thanatos [Awakened]", 25],
 ];
 
 var party_bg_up_buff_data = [
@@ -517,6 +524,7 @@ var ammo_buffs = [
 ];
 
 var buffs = [
+    ["Armed Transform" , ()=>!hasBuff("[Kaleidoscopic Flame Blade] Frey","lancer_form", undefined, true)],
     ["Provisional Forest", () => burstGauge("Shingen") >= 5],
     ["Insane Shout", () => false],
     ["Unit Charge", () => !isUsable("Conceptive Thunder"), () => !isUsable("Weakning Spark")],
@@ -524,6 +532,7 @@ var buffs = [
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.7],
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.6, () => hasBuff("Lugh", "lugh_burst_buff")],
     ["Storm Zeal", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
+    ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
     [ammo_buffs],
     "Indomitable", [bg_up_buffs],
     [party_zeal_buffs],
@@ -1193,6 +1202,7 @@ var actions = [
     [snatch_attack_actions, () => quest_type == "event_story" && getMaxEnemyLevel() <= 50],
     [snatch_attack_actions, () => quest_type == "epic" && getMaxEnemyLevel() <= 50],
     [snatch_attack_actions, () => quest_type == "prizehunt" && getMaxEnemyLevel() < 50],
+    [snatch_attack_actions, () => quest_type == "free" && getMaxEnemyLevel() <= 1000],
     [ue_actions, () => quest_type == "event_union_demon_raid"],
     [normal_actions],
 ];
@@ -1269,7 +1279,8 @@ function getUsableActions() {
         let pl = kh.createInstance("battleUI").SummonButton.panelList;
         if (pl) pl.forEach((s, i) => {
             if (!s) return;
-            if (s._card._turnLabel._stringValue != "") return;
+            if (s.locked) return;
+      	    if (s.turn != 0) return;
             usable_actions.push({
                 name: s._summonData.name,
                 execute: () => {
@@ -2631,5 +2642,5 @@ function returnToMyPage() {
     return Q.resolve();
 }
 
-//setTimeout(returnToMyPage, 300000);
+//setTimeout(returnToMyPage, 180000);
 setTimeout(overrideMethods, 500);
