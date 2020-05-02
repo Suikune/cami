@@ -1657,7 +1657,7 @@ function shouldUseSingleHeal(threshold) {
 function shoulUseDispelAbilities() {
     return () => {
         try {
-            const abilityID = [5, 6, 7, 9, 13, 14, 15, 19, 21, 23, 24, 27, 35, 38, 58, 59, 75, 78, 84, 89, 101, 178, 215, 243, 295, 296, 303, 304, 305, 372, 40003, 40001, 40005];
+            const abilityID = [5, 6, 7, 9, 13, 14, 15, 19, 21, 23, 24, 27, 35, 38, 58, 59, 75, 78, 84, 89, 101, 178, 215, 243, 295, 296, 303, 304, 305, 372, 1040, 1041, 1042, 1043, 1044, 1045, 40003, 40001, 40005];
             const target = getTarget();
             if (bw.enemyStatusBarList[target])
                 return bw.enemyStatusBarList[target]._statusEffectIconHandler._statusEffectList.filter(e => abilityID.includes(e._id)).length > 0;
