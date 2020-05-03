@@ -1,4 +1,4 @@
-﻿$(function() {
+﻿$(function () {
     var settings = JSON.parse($("#hiddenDiv").text());
     var store = yutil.store;
     var hookMethod = yutil.hookMethod;
@@ -11,13 +11,13 @@
     var elements = ["fire", "water", "wind", "thunder", "dark", "light", "", "", "phantom"];
     var count = 0;
     window.checkRaid = function checkRaid(key) {
-        kh.createInstance("apiAQuestInfo").get().then(function(e) {
+        kh.createInstance("apiAQuestInfo").get().then(function (e) {
             info.questInfo = e.body;
             if (info.questInfo.has_unverified) {
-                kh.createInstance("apiABattles").getUnverifiedList().then(function(e) {
+                kh.createInstance("apiABattles").getUnverifiedList().then(function (e) {
                     info.raidUnverifiedList = e.body;
                     info.raidUnverifiedList.data.map(item => {
-                        kh.createInstance("apiABattles").getBattleResult(item.a_battle_id, item.quest_type).then(function(e) {
+                        kh.createInstance("apiABattles").getBattleResult(item.a_battle_id, item.quest_type).then(function (e) {
                             count++;
                             if (count == info.raidUnverifiedList.data.length) {
                                 info.raidUnverifiedList.data = [];
@@ -31,7 +31,7 @@
                 var data = currentRaids[key];
                 var filter = info.questInfo.in_progress.help_raid_ids.filter(item => item == data.id).length > 0;
                 if (filter) {
-                    kh.createInstance("apiAPlayers").getMeNumeric().then(function(e) {
+                    kh.createInstance("apiAPlayers").getMeNumeric().then(function (e) {
                         info.player = e.body;
                         window.raidStage(data.questType, data.id, data.questId, data.ownRaid);
                     })
@@ -56,9 +56,9 @@
             window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
         else {
             if (currentPartyID === 0 || currentPartyID === undefined) { //if not have currentPartyID then find it
-                kh.createInstance("apiAParties").getDecks().then(function(e) {
+                kh.createInstance("apiAParties").getDecks().then(function (e) {
                     info.decks = e.body.decks;
-                    kh.createInstance("apiAPlayers").getMeNumeric().then(function(e) {
+                    kh.createInstance("apiAPlayers").getMeNumeric().then(function (e) {
                         info.player = e.body;
                         window.getPartyID(key);
                     }.bind(this));
@@ -68,15 +68,15 @@
                 if (currentSummonElement !== undefined && currentSummonElement !== "") { //if element specified in raids parameters then use it
                     summonElement = elements.indexOf(currentSummonElement);
                 }
-                kh.createInstance("apiASummons").getSupporters(summonElement).then(function(e) {
+                kh.createInstance("apiASummons").getSupporters(summonElement).then(function (e) {
                     info.supporters = e.body;
                     window.getSummonID(key);
                 }.bind(this));
             } else { //we can join raid
                 if (data.battle_bp > info.questPoints.bp) {
                     let bp = data.battle_bp - info.questPoints.bp;
-                    window.useSeeds(info, bp, function() {
-                        kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function(e) {
+                    window.useSeeds(info, bp, function () {
+                        kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function (e) {
                             if (has(e.body, "cannot_progress_info"))
                                 alert("chon raid khac full me roai");
                             else
@@ -84,11 +84,11 @@
                         }.bind(this));
                     });
                 } else
-                    kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function(e) {
+                    kh.createInstance("apiABattles").joinBattle(currentRaidID, currentSummonID, currentPartyID, currentQuestType).then(function (e) {
                         if (has(e.body, "cannot_progress_info"))
-                                alert("chon raid khac full me roai");
-                            else
-                                window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
+                            alert("chon raid khac full me roai");
+                        else
+                            window.raidStage(currentQuestType, currentRaidID, questId, ownRaid);
                     }.bind(this));
             }
         }
@@ -107,11 +107,11 @@
     window.useSeeds = function useSeeds(data, numSeed, func) {
         let seeds = 0;
         if (data.cure_items) {
-            seeds = data.cure_items.data.filter(function(obj) { return obj.name === 'Energy Seed'; })[0];
+            seeds = data.cure_items.data.filter(function (obj) { return obj.name === 'Energy Seed'; })[0];
         } else {
-            window.kh.createInstance("apiAItems").getCure(1, 10).then(function(e) {
+            window.kh.createInstance("apiAItems").getCure(1, 10).then(function (e) {
                 info.cure_items = e.body;
-                seeds = info.cure_items.data.filter(function(obj) { return obj.name === 'Energy Seed'; })[0];
+                seeds = info.cure_items.data.filter(function (obj) { return obj.name === 'Energy Seed'; })[0];
                 kh.createInstance("apiAItems").useItem(seeds.a_item_id, numSeed).then(func);
             });
             return;
@@ -126,7 +126,7 @@
     }
 
     window.getSummonID = function getSummonID(key) {
-        var nextSummon = info.supporters.data.filter(function(obj) { return obj.summon_info.name === currentSummon && obj.is_friend; })[0];
+        var nextSummon = info.supporters.data.filter(function (obj) { return obj.summon_info.name === currentSummon && obj.is_friend; })[0];
         if (has(nextSummon, "summon_info", "a_summon_id")) {
             currentSummonID = nextSummon.summon_info.a_summon_id;
         } else {
@@ -151,7 +151,7 @@
         }
         return true;
     }
-    setTimeout(function() {
+    setTimeout(function () {
         var _http = window.kh.createInstance("HttpConnection");
 
         $("#Cocos2dGameContainer").css("inherit");
@@ -172,19 +172,19 @@
         mainMenuDiv.append(equipBtn);
         mainMenuDiv.append(statusBtn);
         mainMenuDiv.append(extraBtn);
-        statusBtn.click(function() {
+        statusBtn.click(function () {
             switchMenu(0);
         });
-        equipBtn.click(function() {
+        equipBtn.click(function () {
             switchMenu(1);
         });
-        questBtn.click(function() {
+        questBtn.click(function () {
             switchMenu(2);
         });
-        gachaBtn.click(function() {
+        gachaBtn.click(function () {
             switchMenu(3);
         });
-        extraBtn.click(function() {
+        extraBtn.click(function () {
             switchMenu(4);
         });
 
@@ -351,7 +351,7 @@
         //raid列表
         var raidCtl = {
             raidDatas: null,
-            init: function() {
+            init: function () {
                 var raidDatas = store("raidDatas");
                 if (raidDatas) {
                     raidDatas = JSON.parse(raidDatas);
@@ -360,17 +360,17 @@
                 }
                 this.raidDatas = raidDatas;
             },
-            getRaidDatas: function() {
+            getRaidDatas: function () {
                 return this.raidDatas;
             },
-            getRaidData: function(questId) {
+            getRaidData: function (questId) {
                 return this.raidDatas[questId];
             },
-            saveRaidData: function(raidData) {
+            saveRaidData: function (raidData) {
                 this.raidDatas[raidData.questId] = raidData;
                 this.saveRaidDatas();
             },
-            saveRaidDatas: function() {
+            saveRaidDatas: function () {
                 store("raidDatas", JSON.stringify(this.raidDatas));
             }
 
@@ -561,11 +561,11 @@
         function createShowWeaponGainBtn() {
             var showWeaponGainBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Calculator</button>");
             secondLevelMenuDiv.append(showWeaponGainBtn);
-            showWeaponGainBtn.click(function() {
+            showWeaponGainBtn.click(function () {
                 emptyLog();
                 mypageLog("Start");
                 mypageLog("Stats Weapon:");
-                window.kh.createInstance("apiAParties").getDeck("selected").then(function(e) {
+                window.kh.createInstance("apiAParties").getDeck("selected").then(function (e) {
                     var weaQueue = [];
                     var cacheMap = {};
                     for (var i = 0; i < e.body.deck.weapons.length; i++) {
@@ -582,7 +582,7 @@
 
                         }
                     }
-                    window.Q.all(weaQueue).spread(function() {
+                    window.Q.all(weaQueue).spread(function () {
                         var arg = arguments;
                         var calMap = {};
                         //*查找character字符 索引技能定义（weaponskillmap）
@@ -639,7 +639,7 @@
                                         calItem.ascension = 0;
                                         calMap[type] = calItem;
                                     }
-                                    if (typeof(skillData) != "undefined") {
+                                    if (typeof (skillData) != "undefined") {
                                         var skillType = skillData[0];
                                         var baseNum = skillData[1];
                                         var powWeight = skillData[2];
@@ -648,21 +648,21 @@
                                             case "assault":
                                                 calItem.assault += baseNum + powWeight * skillLevel;
                                                 break;
-                                                //生命
+                                            //生命
                                             case "defender":
                                                 calItem.defender += baseNum + powWeight * skillLevel;
                                                 break;
-                                                //属攻
+                                            //属攻
                                             case "ambition":
                                                 calItem.ambition += baseNum + powWeight * skillLevel;
                                                 break;
-                                                //背水
+                                            //背水
                                             case "pride":
                                                 var prideRange = skillData[3];
                                                 calItem.prideLow += baseNum + powWeight * skillLevel;
                                                 calItem.prideHigh += baseNum + powWeight * skillLevel + prideRange;
                                                 break;
-                                                //二连（只计算等级）
+                                            //二连（只计算等级）
                                             case "rush":
                                                 if (baseNum == 0) {
                                                     calItem.rush += skillLevel;
@@ -672,7 +672,7 @@
                                                     calItem.rush2 += skillLevel;
                                                 }
                                                 break;
-                                                //三连（只计算等级）
+                                            //三连（只计算等级）
                                             case "barrage":
                                                 if (baseNum == 0) {
                                                     calItem.barrage += skillLevel;
@@ -682,7 +682,7 @@
                                                     calItem.barrage2 += skillLevel;
                                                 }
                                                 break;
-                                                //急所（只计算等级）
+                                            //急所（只计算等级）
                                             case "stinger":
                                                 if (baseNum == 0) {
                                                     calItem.stinger += skillLevel;
@@ -701,11 +701,11 @@
                                                     callitem.vigoras += (16 + skillLevel * 0.2) - Math.pow(16 + skillLevel * 0.2, 0.5)
                                                 }
                                                 break;
-                                                //爆裂性能
+                                            //爆裂性能
                                             case "exceed":
                                                 calItem.exceed += baseNum + powWeight * skillLevel;
                                                 break;
-                                                //恢复性能
+                                            //恢复性能
                                             case "ascension":
                                                 calItem.ascension += baseNum + powWeight * skillLevel;
                                                 break;
@@ -786,7 +786,7 @@
                                     (calItem.stinger2 > 0 ? 6 + calItem.stinger2 * 0.5 : 0)
                                 ) + "%";
                             }
-                            if (calItem.vigoras > 0 ) {
+                            if (calItem.vigoras > 0) {
                                 str += "<br>Vigoras " + calItem.vigoras.toFixed(2) + "%";
                             }
                             if (calItem.exceed > 0) {
@@ -798,10 +798,10 @@
                             mypageLog(str);
                         }
                         //drawWeaponSkill(e.body.deck.weapons);
-                    }).fail(function() {
+                    }).fail(function () {
                         mypageLog("计算出错或网络请求失败");
                     });
-                }).fail(function() {
+                }).fail(function () {
                     mypageLog("网络请求失败");
                 });
             });
@@ -831,7 +831,7 @@
                         makeWeaponLevelLabel(n, mainWeapon, "main", 0);
                     }
                 }
-                _.each(subWeapons, function(e, n) {
+                _.each(subWeapons, function (e, n) {
                     if (!(n >= 9)) {
                         var s = a.seekWidgetByName("sub_weapon_blank_" + n),
                             i = n,
@@ -890,7 +890,7 @@
                     }
                     skillData = weaponSkillMap[description];
                     var mainStr, str;
-                    if (typeof(skillData) != "undefined") {
+                    if (typeof (skillData) != "undefined") {
                         var skillType = skillData[0];
                         var baseNum = skillData[1];
                         var powWeight = skillData[2];
@@ -900,16 +900,16 @@
                                 str = "+" + (baseNum + powWeight * skillLevel) + "%";
                                 mainStr = "ATK" + str;
                                 break;
-                                //生命
+                            //生命
                             case "defender":
                                 str = "+" + (baseNum + powWeight * skillLevel) + "%";
                                 mainStr = "MHP" + str;
                                 break;
-                                //属攻
+                            //属攻
                             case "ambition":
                                 mainStr = "EAT+" + (baseNum + powWeight * skillLevel) + "%";
                                 break;
-                                //背水
+                            //背水
                             case "pride":
                                 var prideRange = skillData[3];
                                 var prideLow = baseNum + powWeight * skillLevel;
@@ -917,7 +917,7 @@
                                 mainStr = "背水+" + prideLow + "~" + prideHigh + "%";
 
                                 break;
-                                //二连（只计算等级）
+                            //二连（只计算等级）
                             case "rush":
                                 if (baseNum == 0) {
                                     mainStr = "二段(小)Lv" + skillLevel;
@@ -927,7 +927,7 @@
                                     mainStr = "二段(大)Lv" + skillLevel;
                                 }
                                 break;
-                                //三连（只计算等级）
+                            //三连（只计算等级）
                             case "barrage":
                                 if (baseNum == 0) {
                                     mainStr = "三段(小)Lv" + skillLevel;
@@ -937,7 +937,7 @@
                                     mainStr = "三段(大)Lv" + skillLevel;
                                 }
                                 break;
-                                //急所（只计算等级）
+                            //急所（只计算等级）
                             case "stinger":
                                 if (baseNum == 0) {
                                     mainStr = "急所(小)Lv" + skillLevel;
@@ -947,11 +947,11 @@
                                     mainStr = "急所(大)Lv" + skillLevel;
                                 }
                                 break;
-                                //爆裂性能
+                            //爆裂性能
                             case "exceed":
                                 mainStr = "Burst+" + (baseNum + powWeight * skillLevel) + "%";
                                 break;
-                                //恢复性能
+                            //恢复性能
                             case "ascension":
                                 mainStr = "回復+" + (baseNum + powWeight * skillLevel) + "%";
                                 break;
@@ -989,21 +989,21 @@
         function createShowPartyStateBtn() {
             var showPartyStateBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Team</button>");
             secondLevelMenuDiv.append(showPartyStateBtn);
-            showPartyStateBtn.click(function() {
+            showPartyStateBtn.click(function () {
                 emptyLog();
                 mypageLog("开始获取信息");
-                window.kh.createInstance("apiAParties").getSelectedDeck().then(function(e) {
+                window.kh.createInstance("apiAParties").getSelectedDeck().then(function (e) {
                     //获取Ex技能
                     var partyId = e.body.a_party_id;
                     //输出队伍ID
                     mypageLog("队伍ID：" + partyId);
                     var deck = e.body.deck;
                     console.log(deck);
-                    window.kh.createInstance("apiAParties").getExAbilitiesByParty(e.body.a_party_id).then(function(e) {
+                    window.kh.createInstance("apiAParties").getExAbilitiesByParty(e.body.a_party_id).then(function (e) {
                         var data = e.body.data;
                         var exSkill;
                         console.log(data);
-                        if (typeof(data) != "undefined" && data != null) {
+                        if (typeof (data) != "undefined" && data != null) {
                             for (var i = 0; i < data.length; i++) {
                                 if (data[i].is_set) {
                                     exSkill = data[i];
@@ -1017,7 +1017,7 @@
                         //英灵属性
                         mypageLog("英灵属性：" + elementMap[deck.job.element_type]);
                         //Ex技
-                        if (typeof(exSkill) != "undefined") {
+                        if (typeof (exSkill) != "undefined") {
                             mypageLog("英灵Ex：" + exSkill.name + "(" + exSkill.description + ")");
                         } else {
                             mypageLog("英灵Ex：无");
@@ -1028,7 +1028,7 @@
                         var characterTypeDic = { "attack": 0, "defense": 0, "balance": 0, "heal": 0, "special": 0 };
                         for (var i = 0; i < deck.characters.length; i++) {
                             var character = deck.characters[i];
-                            if (typeof(character) != "undefined") {
+                            if (typeof (character) != "undefined") {
                                 rareDic[character.rare] += 1;
                                 elementType[character.element_type] += 1;
                                 characterTypeDic[character.character_type] += 1;
@@ -1080,7 +1080,7 @@
         function createEnhanceRWeaponBtn() {
             var enhanceRWeaponBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>R level 2</button>");
             secondLevelMenuDiv.append(enhanceRWeaponBtn);
-            enhanceRWeaponBtn.click(function() {
+            enhanceRWeaponBtn.click(function () {
                 emptyLog();
                 //获取武器数组
                 mypageLog("开始获取R武器信息");
@@ -1093,7 +1093,7 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
                         // _.each(data, function (item, i) {
@@ -1104,14 +1104,14 @@
                         // });
                         // debugger;
                         rWeaponArr = data.filter((item) => {
-                                return item.rare == "R" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 100 && !item.is_equipped && !item.is_locked
-                            }).map(item => item.a_weapon_id)
-                            // data.map((item) => {
-                            // 	if (item.rare == "R" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 100 && !item.is_equipped && !item.is_locked) {
-                            // 		debugger;
-                            // 		rWeaponArr.push(item.a_weapon_id);
-                            // 	}
-                            // })
+                            return item.rare == "R" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 100 && !item.is_equipped && !item.is_locked
+                        }).map(item => item.a_weapon_id)
+                        // data.map((item) => {
+                        // 	if (item.rare == "R" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 100 && !item.is_equipped && !item.is_locked) {
+                        // 		debugger;
+                        // 		rWeaponArr.push(item.a_weapon_id);
+                        // 	}
+                        // })
                     }
                     mypageLog("总计未强化R武器数量" + rWeaponArr.length);
                     batchEnhanceRWeapon(rWeaponArr); //批量强化R武器
@@ -1123,7 +1123,7 @@
                 var actTargetWeaponArr = weaponArr.splice(0, 1);
                 var actWeaponArr = weaponArr.splice(0, 1);
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length > 0) {
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr[0]).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr[0]).then(function (e) {
                         mypageLog("R武器强化lv1->lv2完毕");
                         batchEnhanceRWeapon(weaponArr);
                     }).fail(playFailHandler);
@@ -1138,7 +1138,7 @@
         function createEnhanceSRWeapon2Btn() {
             var enhanceSRWeapon2Btn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>R Cup 3</button>");
             secondLevelMenuDiv.append(enhanceSRWeapon2Btn);
-            enhanceSRWeapon2Btn.click(function() {
+            enhanceSRWeapon2Btn.click(function () {
                 emptyLog();
                 //获取武器数组
                 mypageLog("开始获取SR武器和R武器信息");
@@ -1151,10 +1151,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR武器（SR圣杯基础攻击150）
                             if (item.weapon_id == 6000 && item.rare == "R" && item.level == 1 && item.bonus == 0 && item.exp == 0 && !item.is_equipped && !item.is_locked) {
                                 rCupArr.push(item.a_weapon_id);
@@ -1179,7 +1179,7 @@
                 if (actTargetWeaponArr.length > 0 && actRCupEnchance.length > 0) {
                     var actWeaponArr1 = actRCupEnchance.splice(0, 1);
                     // actWeaponArr1.push();
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function (e) {
                         mypageLog("R cup lv1->lv3");
                         batchEnhanceSRWeapon2(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1194,7 +1194,7 @@
         function createEnhanceRCupBtn() {
             var enhanceRCupBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>R cup</button>");
             secondLevelMenuDiv.append(enhanceRCupBtn);
-            enhanceRCupBtn.click(function() {
+            enhanceRCupBtn.click(function () {
                 emptyLog();
                 //获取R圣杯和R武器数组
                 mypageLog("开始获取R圣杯和R武器信息");
@@ -1207,10 +1207,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤R圣杯
                             if (item.weapon_id == 6000 && item.rare == "R" && item.level == 1 && item.bonus == 0 && item.exp == 0 && !item.is_equipped && !item.is_locked) {
                                 rCupArr.push(item.a_weapon_id);
@@ -1232,7 +1232,7 @@
                 var actTargetCupArr = targetCupArr.splice(0, 1);
                 var actWeaponArr = weaponArr.splice(0, 3);
                 if (actTargetCupArr.length > 0 && actWeaponArr.length == 3) {
-                    kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr).then(function (e) {
                         mypageLog("R圣杯强化lv1->lv4完毕");
                         batchEnhanceRCup(targetCupArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1246,7 +1246,7 @@
         function createEnhanceSRWeapon3Btn() {
             var enhanceSRWeapon3Btn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>R Cup 4</button>");
             secondLevelMenuDiv.append(enhanceSRWeapon3Btn);
-            enhanceSRWeapon3Btn.click(function() {
+            enhanceSRWeapon3Btn.click(function () {
                 emptyLog();
                 //获取SR武器和R武器数组
                 mypageLog("开始获取SR武器和R武器信息");
@@ -1259,10 +1259,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR武器（SR圣杯基础攻击150）
                             // if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
                             // 	srWeaponArr.push(item.a_weapon_id);
@@ -1292,7 +1292,7 @@
                 var actWeaponArr = weaponArr.splice(0, 1);
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length > 0) {
                     var actWeaponArr1 = actWeaponArr.splice(0, 1);
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function (e) {
                         mypageLog("R武器强化lv3->lv4完毕");
                         batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1307,7 +1307,7 @@
         function createEnhanceRCup5Btn() {
             var enhanceSRWeapon3Btn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>R Cup 5</button>");
             secondLevelMenuDiv.append(enhanceSRWeapon3Btn);
-            enhanceSRWeapon3Btn.click(function() {
+            enhanceSRWeapon3Btn.click(function () {
                 emptyLog();
                 //获取SR武器和R武器数组
                 mypageLog("开始获取SR武器和R武器信息");
@@ -1320,10 +1320,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR武器（SR圣杯基础攻击150）
                             // if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
                             // 	srWeaponArr.push(item.a_weapon_id);
@@ -1353,7 +1353,7 @@
                 var actWeaponArr = weaponArr.splice(0, 1);
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length > 0) {
                     var actWeaponArr1 = actWeaponArr.splice(0, 1);
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function (e) {
                         mypageLog("R武器强化lv3->lv5完毕");
                         batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1369,7 +1369,7 @@
         function createEnhanceSRWeaponBtn() {
             var enhanceSRWeaponBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>SR level 4</button>");
             secondLevelMenuDiv.append(enhanceSRWeaponBtn);
-            enhanceSRWeaponBtn.click(function() {
+            enhanceSRWeaponBtn.click(function () {
                 emptyLog();
                 //获取SR武器和R武器数组
                 mypageLog("开始获取SR武器和R武器信息");
@@ -1382,10 +1382,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR武器（SR圣杯基础攻击150）
                             if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
                                 srWeaponArr.push(item.a_weapon_id);
@@ -1407,7 +1407,7 @@
                 var actTargetWeaponArr = targetWeaponArr.splice(0, 1);
                 var actWeaponArr = weaponArr.splice(0, 6);
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length == 6) {
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr).then(function (e) {
                         mypageLog("SR武器强化lv1->lv4完毕");
                         batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1421,7 +1421,7 @@
         function createEnhanceSR5Btn() {
             var enhanceSRWeapon3Btn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>SR level 5</button>");
             secondLevelMenuDiv.append(enhanceSRWeapon3Btn);
-            enhanceSRWeapon3Btn.click(function() {
+            enhanceSRWeapon3Btn.click(function () {
                 emptyLog();
                 //获取SR武器和R武器数组
                 mypageLog("开始获取SR武器和R武器信息");
@@ -1434,10 +1434,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR武器（SR圣杯基础攻击150）
                             // if (item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && item.attack > 160 && !item.is_equipped && !item.is_locked) {
                             // 	srWeaponArr.push(item.a_weapon_id);
@@ -1467,7 +1467,7 @@
                 var actWeaponArr = weaponArr.splice(0, 1);
                 if (actTargetWeaponArr.length > 0 && actWeaponArr.length > 0) {
                     var actWeaponArr1 = actWeaponArr.splice(0, 1);
-                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetWeaponArr[0], actWeaponArr1).then(function (e) {
                         mypageLog("SR武器强化lv1->lv5完毕");
                         batchEnhanceSRWeapon(targetWeaponArr, weaponArr);
                     }).fail(playFailHandler);
@@ -1482,7 +1482,7 @@
         function createEnhanceSRCupBtn() {
             var enhanceSRCupBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>SR cup</button>");
             secondLevelMenuDiv.append(enhanceSRCupBtn);
-            enhanceSRCupBtn.click(function() {
+            enhanceSRCupBtn.click(function () {
                 emptyLog();
                 //获取R圣杯和R武器数组
                 mypageLog("开始获取SR圣杯和R武器信息");
@@ -1495,10 +1495,10 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR圣杯
                             if (item.weapon_id == 5000 && item.rare == "SR" && item.level == 1 && item.exp == 0 && item.bonus == 0 && !item.is_equipped && !item.is_locked) {
                                 srCupArr.push(item.a_weapon_id);
@@ -1521,15 +1521,15 @@
                 var actWeaponArr = weaponArr.splice(0, 10);
                 if (actTargetCupArr.length > 0 && actWeaponArr.length == 10) {
                     var actWeaponArr1 = actWeaponArr.splice(0, 1);
-                    kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr1).then(function(e) {
+                    kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr1).then(function (e) {
                         mypageLog("SR圣杯强化lv1->lv2完毕");
                         var actWeaponArr2 = actWeaponArr.splice(0, 2);
-                        kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr2).then(function(e) {
+                        kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr2).then(function (e) {
                             mypageLog("SR圣杯强化lv2->lv3完毕");
                             var actWeaponArr3 = actWeaponArr.splice(0, 3);
-                            kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr3).then(function(e) {
+                            kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr3).then(function (e) {
                                 mypageLog("SR圣杯强化lv3->lv4完毕");
-                                kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr).then(function(e) {
+                                kh.createInstance("apiAWeapons").enhance(actTargetCupArr[0], actWeaponArr).then(function (e) {
                                     mypageLog("SR圣杯强化lv4->lv5完毕");
                                     batchEnhanceSRCup(targetCupArr, weaponArr);
                                 }).fail(playFailHandler);
@@ -1547,7 +1547,7 @@
         function createNEidoBtn() {
             var sellSumBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Sell N eido</button>");
             secondLevelMenuDiv.append(sellSumBtn);
-            sellSumBtn.click(function() {
+            sellSumBtn.click(function () {
                 logDiv.empty();
                 sellSum();
             });
@@ -1557,7 +1557,7 @@
         function createNWeapBtn() {
             var sellWeaponBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Sell N weapon</button>");
             secondLevelMenuDiv.append(sellWeaponBtn);
-            sellWeaponBtn.click(function() {
+            sellWeaponBtn.click(function () {
                 logDiv.empty();
                 sellWeapon();
             });
@@ -1567,7 +1567,7 @@
         function createREidoBtn() {
             var sellRSumBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>卖r幻兽</button>");
             secondLevelMenuDiv.append(sellRSumBtn);
-            sellRSumBtn.click(function() {
+            sellRSumBtn.click(function () {
                 emptyLog();
                 mypageLog("开始获取幻兽信息");
                 _http.get({
@@ -1577,11 +1577,11 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     var sellArr = [];
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤R卡
                             if (item.can_sell && item.level == 1 && item.exp == 0 && item.rare == "R" && item.bonus == 0 && item.overlimit_count == 0 && item.attack > 20) {
                                 sellArr.push(item.a_summon_id);
@@ -1598,7 +1598,7 @@
         function createREidoMBtn() {
             var sellRSumDogFoodBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>卖r幻兽材</button>");
             secondLevelMenuDiv.append(sellRSumDogFoodBtn);
-            sellRSumDogFoodBtn.click(function() {
+            sellRSumDogFoodBtn.click(function () {
                 emptyLog();
                 mypageLog("开始获取R幻兽狗粮信息");
                 _http.get({
@@ -1608,11 +1608,11 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     var sellArr = [];
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤R卡
                             if (item.can_sell && item.level == 1 && item.exp == 0 && item.rare == "R" && item.bonus == 0 && item.overlimit_count == 0 && item.attack == 6) {
                                 sellArr.push(item.a_summon_id);
@@ -1629,7 +1629,7 @@
         function createRWeapMBtn() {
             var sellRWeapMBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>卖r武材</button>");
             secondLevelMenuDiv.append(sellRWeapMBtn);
-            sellRWeapMBtn.click(function() {
+            sellRWeapMBtn.click(function () {
                 emptyLog();
                 mypageLog("开始获取R武器狗粮信息");
                 _http.get({
@@ -1639,11 +1639,11 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     var sellArr = [];
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤R卡
                             if (item.level == 1 && item.exp == 0 && item.rare == "R" && item.bonus == 0 && item.overlimit_count == 0 && item.attack == 8 && !item.is_equipped && !item.is_locked) {
                                 sellArr.push(item.a_weapon_id);
@@ -1660,7 +1660,7 @@
         function createSREidoBtn() {
             var sellSRSumDogFoodBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>sr幻兽材</button>");
             secondLevelMenuDiv.append(sellSRSumDogFoodBtn);
-            sellSRSumDogFoodBtn.click(function() {
+            sellSRSumDogFoodBtn.click(function () {
                 emptyLog();
                 mypageLog("开始获取SR幻兽狗粮信息");
                 _http.get({
@@ -1670,11 +1670,11 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     var data = e.body.data;
                     var sellArr = [];
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             //过滤SR卡
                             if (item.can_sell && item.level == 1 && item.exp == 0 && item.rare == "SR" && item.bonus == 0 && item.overlimit_count == 0 && item.attack == 12) {
                                 sellArr.push(item.a_summon_id);
@@ -1698,7 +1698,7 @@
         // }
 
         function sellWeapon() {
-            window.kh.createInstance("apiAWeapons").getRecommendSellableList().then(function(e) {
+            window.kh.createInstance("apiAWeapons").getRecommendSellableList().then(function (e) {
                 if (0 === e.body.max_record_count) {
                     logDiv.append("N武器数量0<br/>");
                 } else {
@@ -1707,19 +1707,19 @@
                         sellArr.push(e.body.data[i].a_weapon_id);
                     }
                     logDiv.append("N武器数量" + sellArr.length + "<br/>");
-                    window.kh.createInstance("apiAWeapons").sell(sellArr).then(function(e) {
+                    window.kh.createInstance("apiAWeapons").sell(sellArr).then(function (e) {
                         logDiv.append("出售完毕<br/>");
                         if (sellArr.length >= 20) {
                             //继续捐献
                             sellWeapon();
-                        } else {}
+                        } else { }
                     }).fail(playFailHandler);;
                 }
             }).fail(playFailHandler);
         }
 
         function sellSum() {
-            window.kh.createInstance("apiASummons").getRecommendSellableList().then(function(e) {
+            window.kh.createInstance("apiASummons").getRecommendSellableList().then(function (e) {
                 if (0 === e.body.max_record_count) {
                     logDiv.append("N幻兽数量0<br/>");
                 } else {
@@ -1728,12 +1728,12 @@
                         sellArr.push(e.body.data[i].a_summon_id);
                     }
                     logDiv.append("N幻兽数量" + sellArr.length + "<br/>");
-                    window.kh.createInstance("apiASummons").sell(sellArr).then(function(e) {
+                    window.kh.createInstance("apiASummons").sell(sellArr).then(function (e) {
                         logDiv.append("出售完毕<br/>");
                         if (sellArr.length >= 20) {
                             //继续捐献
                             sellSum();
-                        } else {}
+                        } else { }
                     }).fail(playFailHandler);
                 }
             }).fail(playFailHandler);
@@ -1742,7 +1742,7 @@
         function batchSellSummon(sellArr) {
             var actSellArr = sellArr.splice(0, 20);
             if (actSellArr.length > 0) {
-                kh.createInstance("apiASummons").sell(actSellArr).then(function(e) {
+                kh.createInstance("apiASummons").sell(actSellArr).then(function (e) {
                     mypageLog("出售幻兽共" + actSellArr.length + "。");
                     batchSellSummon(sellArr);
                 }).fail(playFailHandler);
@@ -1755,7 +1755,7 @@
         function batchSellWeapon(sellArr) {
             var actSellArr = sellArr.splice(0, 20);
             if (actSellArr.length > 0) {
-                kh.createInstance("apiAWeapons").sell(actSellArr).then(function(e) {
+                kh.createInstance("apiAWeapons").sell(actSellArr).then(function (e) {
                     mypageLog("出售武器共" + actSellArr.length + "。");
                     batchSellWeapon(sellArr);
                 }).fail(playFailHandler);
@@ -1768,7 +1768,7 @@
         function batchSellAcc(sellArr) {
             let sellArray = sellArr.splice(0, 20);
             if (sellArray.length > 0) {
-                window.kh.createInstance("apiAAccessories").sell(sellArray).then(function(e) {
+                window.kh.createInstance("apiAAccessories").sell(sellArray).then(function (e) {
                     mypageLog("出售幻兽共" + sellArray.length + "。");
                     if (sellArr.length >= 20) {
                         //继续卖出
@@ -1783,13 +1783,13 @@
         function createSellNAccBtn() {
             var sellNAccBtn = $("<button type='button' class='btn'  style='width:33%;white-space:nowrap'>Sell ACC N</button>");
             secondLevelMenuDiv.append(sellNAccBtn);
-            sellNAccBtn.click(function() {
+            sellNAccBtn.click(function () {
                 emptyLog();
                 sellNAcc();
             });
 
             function sellNAcc() {
-                window.kh.createInstance("apiAAccessories").getRecommendSellableList().then(function(e) {
+                window.kh.createInstance("apiAAccessories").getRecommendSellableList().then(function (e) {
                     if (0 === e.body.max_record_count) {
                         mypageLog("N首饰数量0");
                     } else {
@@ -1798,7 +1798,7 @@
                             sellArr.push(e.body.data[i].a_accessory_id);
                         }
                         mypageLog("出售N首饰共" + sellArr.length + "。");
-                        window.kh.createInstance("apiAAccessories").sell(sellArr).then(function(e) {
+                        window.kh.createInstance("apiAAccessories").sell(sellArr).then(function (e) {
                             mypageLog("出售完毕");
                             if (sellArr.length >= 20) {
                                 //继续卖出
@@ -1813,54 +1813,7 @@
         function createSellRAccBtn() {
             var sellNAccBtn = $("<button type='button' class='btn'  style='width:33%;white-space:nowrap'>Sell ACC R</button>");
             secondLevelMenuDiv.append(sellNAccBtn);
-            sellNAccBtn.click(function() {
-                emptyLog();
-                sellRAcc();
-            });
-
-            function sellRAcc() {
-                _http.get({
-                        url: kh.env.urlRoot + "/a_accessories",
-                        json: {
-                            //selectable_base_filter: "sellable",
-                            page: 1,
-                            per_page: 500
-                        }
-                    }).then(function(e) {
-                        var sellArr = e.body.data.filter((item) => {
-                            return item.rare == "R" && item.attack >= 100 && item.level == 1 && !item.is_locked && !item.is_equipped
-                        }).map((item) => {
-                            return item.a_accessory_id;
-                        });
-                        batchSellAcc(sellArr);
-                    })
-                    // window.kh.createInstance("apiAAccessories").getRecommendSellableList().then(function (e) {
-                    // 	if (0 === e.body.max_record_count) {
-                    // 		mypageLog("N首饰数量0");
-                    // 	} else {
-                    // 		var sellArr = [];
-                    // 		for (var i = 0; i < e.body.data.length; i++) {
-                    // 			sellArr.push(e.body.data[i].a_accessory_id);
-                    // 		}
-                    // 		mypageLog("出售N首饰共" + sellArr.length + "。");
-                    // 		window.kh.createInstance("apiAAccessories").sell(sellArr).then(function (e) {
-                    // 			mypageLog("出售完毕");
-                    // 			if (sellArr.length >= 20) {
-                    // 				//继续卖出
-                    // 				sellRAcc();
-                    // 			}
-                    // 		}).fail(playFailHandler);
-                    // 	}
-                    // }).fail(playFailHandler);
-            };
-
-
-        };
-
-        function createSellSRAccBtn() {
-            var sellNAccBtn = $("<button type='button' class='btn'  style='width:33%;white-space:nowrap'>Sell ACC SR</button>");
-            secondLevelMenuDiv.append(sellNAccBtn);
-            sellNAccBtn.click(function() {
+            sellNAccBtn.click(function () {
                 emptyLog();
                 sellRAcc();
             });
@@ -1873,7 +1826,54 @@
                         page: 1,
                         per_page: 500
                     }
-                }).then(function(e) {
+                }).then(function (e) {
+                    var sellArr = e.body.data.filter((item) => {
+                        return item.rare == "R" && item.attack >= 100 && item.level == 1 && !item.is_locked && !item.is_equipped
+                    }).map((item) => {
+                        return item.a_accessory_id;
+                    });
+                    batchSellAcc(sellArr);
+                })
+                // window.kh.createInstance("apiAAccessories").getRecommendSellableList().then(function (e) {
+                // 	if (0 === e.body.max_record_count) {
+                // 		mypageLog("N首饰数量0");
+                // 	} else {
+                // 		var sellArr = [];
+                // 		for (var i = 0; i < e.body.data.length; i++) {
+                // 			sellArr.push(e.body.data[i].a_accessory_id);
+                // 		}
+                // 		mypageLog("出售N首饰共" + sellArr.length + "。");
+                // 		window.kh.createInstance("apiAAccessories").sell(sellArr).then(function (e) {
+                // 			mypageLog("出售完毕");
+                // 			if (sellArr.length >= 20) {
+                // 				//继续卖出
+                // 				sellRAcc();
+                // 			}
+                // 		}).fail(playFailHandler);
+                // 	}
+                // }).fail(playFailHandler);
+            };
+
+
+        };
+
+        function createSellSRAccBtn() {
+            var sellNAccBtn = $("<button type='button' class='btn'  style='width:33%;white-space:nowrap'>Sell ACC SR</button>");
+            secondLevelMenuDiv.append(sellNAccBtn);
+            sellNAccBtn.click(function () {
+                emptyLog();
+                sellRAcc();
+            });
+
+            function sellRAcc() {
+                _http.get({
+                    url: kh.env.urlRoot + "/a_accessories",
+                    json: {
+                        //selectable_base_filter: "sellable",
+                        page: 1,
+                        per_page: 500
+                    }
+                }).then(function (e) {
                     var sellArr = e.body.data.filter((item) => {
                         return item.rare == "SR" && item.attack >= 100 && item.level == 1 && !item.is_locked && !item.is_equipped
                     }).map((item) => {
@@ -1887,7 +1887,7 @@
         function batchSellSummon(sellArr) {
             var actSellArr = sellArr.splice(0, 20);
             if (actSellArr.length > 0) {
-                kh.createInstance("apiASummons").sell(actSellArr).then(function(e) {
+                kh.createInstance("apiASummons").sell(actSellArr).then(function (e) {
                     mypageLog("出售幻兽共" + actSellArr.length + "。");
                     batchSellSummon(sellArr);
                 }).fail(playFailHandler);
@@ -1901,32 +1901,37 @@
         function createRefreshExistBtn() {
             var refreshExistBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>RefreshExist</button>");
             secondLevelMenuDiv.append(refreshExistBtn);
-            refreshExistBtn.click(function() {
+            refreshExistBtn.click(function () {
                 emptyLog();
-                mypageLog("Bắt đầu");
-                _http.get({
-                    url: window.kh.env.urlRoot + "/a_players/me/game_config"
-                }).then(function(e) {
-                    var si = e.body.game_config.sound_info;
-                    var param = {
-                        sound_info: {
-                            sound_enabled: si.sound_enabled,
-                            bgm_enabled: si.bgm_enabled,
-                            voice_enabled: si.voice_enabled,
-                            se_enabled: si.se_enabled
-                        }
+                kh.createInstance("apiAQuestInfo").get().then(function (e) {
+                    info.questInfo = e.body;
+                    if (info.questInfo.has_unverified) {
+                        kh.createInstance("apiABattles").getUnverifiedList().then(function (e) {
+                            info.raidUnverifiedList = e.body;
+                            var resultItem = {};
+                            info.raidUnverifiedList.data.map(item => {
+                                kh.createInstance("apiABattles").getBattleResult(item.a_battle_id, item.quest_type).then(function (e) {
+                                    const result = e.body;
+                                    if (resultItem[result.items_gained.name]) {
+                                        resultItem[result.items_gained.name] += result.items_gained.amount;
+                                    } else {
+                                        resultItem[result.items_gained.name] = result.items_gained.amount;
+                                    }
+                                    count++;
+                                    if (count == info.raidUnverifiedList.data.length) {
+                                        info.raidUnverifiedList.data = [];
+                                        _.map(resultItem, (i, key) => {
+                                            mypageLog(key + ": " + i);
+                                        })
+                                        mypageLog("Done");
+                                    }
+                                });
+                            })
+                        }.bind(this));
+                    } else {
+                        mypageLog("Don't have pending result raid");
                     }
-                    _http.put({
-                        url: "/v1/a_players/me/game_config",
-                        json: param
-                    }).then(function(a) {
-                        mypageLog("Hoàn tất");
-                    }).fail(function() {
-                        mypageLog("Kết nối thất bại");
-                    });
-                }).fail(function() {
-                    mypageLog("Kết nối thất bại");
-                });
+                })
             });
         };
 
@@ -1934,7 +1939,7 @@
         function createCheckRaidBtn() {
             var checkRaidBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Raid</button>");
             secondLevelMenuDiv.append(checkRaidBtn);
-            checkRaidBtn.click(function() {
+            checkRaidBtn.click(function () {
                 emptyLog();
                 mypageLog("Kiểm tra raid");
                 _http.get({
@@ -1942,16 +1947,16 @@
                     json: {
                         kind: "raid_request"
                     }
-                }).then(function(data) {
+                }).then(function (data) {
                     if (data.body.max_record_count == 0) {
                         mypageLog("Đéo có raid");
                     } else {
-                        kh.createInstance("apiAPlayers").getQuestPoints().then(function(e) {
+                        kh.createInstance("apiAPlayers").getQuestPoints().then(function (e) {
                             info.questPoints = e.body.quest_points;
                         }.bind(this));
                         var recommendItem = null;
                         currentRaids = [];
-                        $.each(data.body.data, function(i, item) {
+                        $.each(data.body.data, function (i, item) {
                             var questId = item.quest_id;
                             var raidData = raidCtl.getRaidData(questId);
                             let raid = {
@@ -1976,7 +1981,7 @@
                                 raidCtl.saveRaidData(raidData);
                             }
 
-                            if (typeof(item) != "undefined" && item != null) {
+                            if (typeof (item) != "undefined" && item != null) {
                                 /*
                                 item.recommended_element_type
                                 item.owner_account_id
@@ -2026,17 +2031,17 @@
         function createCheckMissionBtn() {
             var checkMissionBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap' style='width:33%;white-space:nowrap'>CheckMission</button>");
             secondLevelMenuDiv.append(checkMissionBtn);
-            checkMissionBtn.click(function() {
+            checkMissionBtn.click(function () {
                 emptyLog();
 
                 var missionApi = kh.createInstance("apiAMissions");
-                var printEvt = function(ret, name) {
+                var printEvt = function (ret, name) {
                     var str = name + ":";
                     if (ret.complete) {
                         str += "已完成";
                     } else {
                         str += "未完成";
-                        _.each(ret.missions, function(item, i) {
+                        _.each(ret.missions, function (item, i) {
                             var des = missionMap[item.description];
                             des = des || item.description;
                             str += "<br/>" + des + ":" + item.now_progress + "/" + item.max_progress;
@@ -2044,7 +2049,7 @@
                     }
                     mypageLog(str);
                 }
-                Q.all([missionApi.getDaily(), missionApi.getWeekly(), missionApi.getEvent()]).spread(function(daily, weekly, evt) {
+                Q.all([missionApi.getDaily(), missionApi.getWeekly(), missionApi.getEvent()]).spread(function (daily, weekly, evt) {
                     printEvt(evt.body, "活动任务");
                     mypageLog("");
                     printEvt(daily.body, "日常任务");
@@ -2056,23 +2061,23 @@
 
 
         //检查支援
-        function createCheckSupportSummonBtn() {};
+        function createCheckSupportSummonBtn() { };
 
         //领日常奖励
         function createCollQuestBtn() {
             var collQuestBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>DailyReward</button>");
             secondLevelMenuDiv.append(collQuestBtn);
-            collQuestBtn.click(function() {
+            collQuestBtn.click(function () {
                 emptyLog();
                 collQuestBtn.prop("disabled", true);
                 var missionApi = kh.createInstance("apiAMissions");
-                Q.all([missionApi.getDaily(), missionApi.getWeekly(), missionApi.getEvent()]).spread(function(daily, weekly, evt) {
+                Q.all([missionApi.getDaily(), missionApi.getWeekly(), missionApi.getEvent()]).spread(function (daily, weekly, evt) {
                     var pro = Promise.resolve();
-                    var pushReceiveReward = function(body, type, funArr) {
+                    var pushReceiveReward = function (body, type, funArr) {
                         if (!body.complete) {
-                            _.each(body.missions, function(item, i) {
+                            _.each(body.missions, function (item, i) {
                                 if (item.clear) {
-                                    funArr.push(function() {
+                                    funArr.push(function () {
                                         return missionApi.receiveMissionReward(type, item.a_mission_id);
                                     });
                                 }
@@ -2083,9 +2088,9 @@
                     pushReceiveReward(daily.body, "daily", funArr);
                     pushReceiveReward(weekly.body, "weekly", funArr);
                     pushReceiveReward(evt.body, "event", funArr);
-                    funArr.reduce(function(curr, next) {
+                    funArr.reduce(function (curr, next) {
                         return curr.then(next);
-                    }, pro).then(function() {
+                    }, pro).then(function () {
                         if (funArr.length > 0) {
                             mypageLog("Đã nhận");
                         } else {
@@ -2102,13 +2107,13 @@
         function createGachaBtn() {
             var normalGachaBtn = $("<button type='button' class='btn' style='width:100%'>Gem</button>");
             secondLevelMenuDiv.append(normalGachaBtn);
-            normalGachaBtn.click(function() {
+            normalGachaBtn.click(function () {
                 emptyLog();
                 continuePlay();
 
                 function continuePlay() {
                     var gachaApi = window.kh.createInstance("apiAGacha");
-                    gachaApi.getCategory(3).then(function(e) {
+                    gachaApi.getCategory(3).then(function (e) {
                         debugger;
                         var isMax = e.body["is_max_weapon_or_summon"];
                         if (isMax) {
@@ -2117,10 +2122,10 @@
                         }
                         var groups = e.body.groups;
                         if (groups && groups[0] && groups[0].gacha_id == 10) {
-                            gachaApi.getCheckUsing(10).then(function(e) {
+                            gachaApi.getCheckUsing(10).then(function (e) {
                                 if (e.body.after_num == e.body.before_num) {
                                     mypageLog("Gacha gem");
-                                    gachaApi.playGacha("normal", 10).then(function(e) {
+                                    gachaApi.playGacha("normal", 10).then(function (e) {
                                         if (handleGachaResult(e)) {
                                             continuePlay();
                                         }
@@ -2131,7 +2136,7 @@
                                 }
                             }).fail(playFailHandler);
                         } else if (groups && groups.length > 0 && groups[0].gacha_id == 9 && groups[0].enabled) {
-                            gachaApi.getCheckUsing(9).then(function(e) {
+                            gachaApi.getCheckUsing(9).then(function (e) {
                                 mypageLog("抽卡价格" + groups[0].price);
                                 if (groups[0].price < 500) {
                                     mypageLog("少于5抽,扭蛋结束");
@@ -2141,7 +2146,7 @@
                                     return;
                                 } else if (e.body.before_num - e.body.after_num == groups[0].price) {
                                     mypageLog("开始" + groups[0].gacha_count + "次抽取");
-                                    gachaApi.playGacha("normal", 9).then(function(e) {
+                                    gachaApi.playGacha("normal", 9).then(function (e) {
                                         if (handleGachaResult(e)) {
                                             continuePlay();
                                         }
@@ -2152,7 +2157,7 @@
                                 }
                             }).fail(playFailHandler);
                         } else {
-                            gachaApi.getCheckUsing(8).then(function(e) {
+                            gachaApi.getCheckUsing(8).then(function (e) {
                                 if (e.body.before_num < 200) {
                                     mypageLog("Hết tiền");
                                     return;
@@ -2209,12 +2214,12 @@
             secondLevelMenuDiv.append(input);
             secondLevelMenuDiv.append(gachaBtn);
             secondLevelMenuDiv.append(value);
-            gachaBtn.click(function() {
+            gachaBtn.click(function () {
                 emptyLog();
                 var id = document.getElementById("input_event_raid_id").value;
                 var value = document.getElementById("input_event_raid_ticket").value;
                 if (id) {
-                    kh.createInstance("apiAItems").getTicket(1, 10).then(function(e) {
+                    kh.createInstance("apiAItems").getTicket(1, 10).then(function (e) {
                         var ticket = getNumTicket(e)[0].num;
                         if (!ticket) {
                             mypageLog("cant find ticket!!!!");
@@ -2236,7 +2241,7 @@
                 function gachaNonstop(ticket) {
                     if (!ticket) return;
                     var gachaApi = window.kh.createInstance("apiAGacha");
-                    gachaApi.playGacha("event", id).then(function(e) {
+                    gachaApi.playGacha("event", id).then(function (e) {
                         handleGachaResult(e);
                         gachaNonstop(ticket - 10);
                     }).fail(playFailHandler)
@@ -2284,21 +2289,21 @@
         function createGachaStoneBtn() {
             var gachaStoneBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap' disabled='disabled'>Jewel</button>");
             secondLevelMenuDiv.append(gachaStoneBtn);
-            gachaStoneBtn.click(function() {
+            gachaStoneBtn.click(function () {
                 emptyLog();
 
                 continuePlay();
 
                 function continuePlay() {
                     var gachaApi = window.kh.createInstance("apiAGacha");
-                    gachaApi.getCategory("stone").then(function(e) {
+                    gachaApi.getCategory("stone").then(function (e) {
                         var groups = e.body.groups;
                         if (groups && groups[1] && groups[1].gacha_id == 7) {
-                            gachaApi.getCheckUsing(7).then(function(e) {
+                            gachaApi.getCheckUsing(7).then(function (e) {
                                 console.log(e.body.before_num);
                                 if (e.body.before_num >= 3000) {
                                     mypageLog(new Date());
-                                    gachaApi.playGacha("stone", 7).then(function(e) {
+                                    gachaApi.playGacha("stone", 7).then(function (e) {
                                         if (handleGachaResult(e)) {
                                             continuePlay();
                                         }
@@ -2371,14 +2376,14 @@
         function createPresentBtn() {
             var presentBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>接收礼物</button>")
             secondLevelMenuDiv.append(presentBtn);
-            presentBtn.click(function() {
+            presentBtn.click(function () {
                 emptyLog();
                 _http.post({
                     url: kh.env.urlRoot + "/a_presents_receive",
                     json: {
                         type: 'normal'
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     handlePresentResult(e);
                 });
             });
@@ -2429,7 +2434,7 @@
             secondLevelMenuDiv.append(itmFiltr);
             secondLevelMenuDiv.append(pageInput);
             secondLevelMenuDiv.append(prsntItmBtn);
-            prsntItmBtn.click(function() {
+            prsntItmBtn.click(function () {
                 emptyLog();
                 var pgInput = document.getElementById("pageInput");
                 var pageNum = parseInt(pgInput.value);
@@ -2445,7 +2450,7 @@
                     	 page: 1,
                     	 per_page: '50'
                      }*/
-                }).then(function(e) {
+                }).then(function (e) {
                     var ttlprsntpg = Math.ceil(e.body["max_record_count"] / 400);
                     var prsntInfo = e.body["data"];
                     var itmAttr = document.getElementById("itmFiltr");
@@ -2676,14 +2681,14 @@
         function createlimitPresentBtn() {
             var limitpresentBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Receive Pressent</button>")
             secondLevelMenuDiv.append(limitpresentBtn);
-            limitpresentBtn.click(function() {
+            limitpresentBtn.click(function () {
                 emptyLog();
                 _http.post({
                     url: kh.env.urlRoot + "/a_presents_receive",
                     json: {
                         type: 'timelimit'
                     }
-                }).then(function(e) {
+                }).then(function (e) {
                     handlePresentResult(e);
                 });
             });
@@ -2722,7 +2727,7 @@
         function createSimGacha10Btn() {
             var simGacha10Btn = $("<button type='button' class='btn'>模拟十连</button>");
             secondLevelMenuDiv.append(simGacha10Btn);
-            simGacha10Btn.click(function() {
+            simGacha10Btn.click(function () {
                 var settings = JSON.parse($("#hiddenDiv").text());
                 var extensionId = settings.extensionId;
                 var img1 = $("<img src='chrome-extension://" + extensionId + "/img/corecard_item_0123.jpg' width='150' height='150'/>");
@@ -2734,18 +2739,18 @@
         function createDailyTreasureExchangeBtn() {
             var dailyTreasureExchangeBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>Exchange</button>");
             secondLevelMenuDiv.append(dailyTreasureExchangeBtn);
-            dailyTreasureExchangeBtn.click(function() {
+            dailyTreasureExchangeBtn.click(function () {
                 var index = -1;
                 var itemArr = [];
                 emptyLog();
                 //获取满足要求的商店宝藏信息并交换
                 mypageLog("开始获取商店宝藏信息");
-                window.kh.createInstance("apiShop").getTreasuresTreasure(1, 100).then(function(e) {
+                window.kh.createInstance("apiShop").getTreasuresTreasure(1, 100).then(function (e) {
                     var data = e.body.data;
                     if (data && data.length > 0) {
-                        _.each(data, function(item, i) {
+                        _.each(data, function (item, i) {
                             index = dailyTreasureExchangeList.indexOf(item.id);
-                            if (typeof(item) != "undefined" //物品存在
+                            if (typeof (item) != "undefined" //物品存在
                                 &&
                                 index > -1 //在列表中
                                 &&
@@ -2766,7 +2771,7 @@
                 var actItemArr = itemArr.splice(0, 1);
                 if (actItemArr.length > 0) {
                     var item = actItemArr[0];
-                    window.kh.createInstance("apiShop").exchangeTreasure(item.shop_treasure_id, 1).then(function(e) {
+                    window.kh.createInstance("apiShop").exchangeTreasure(item.shop_treasure_id, 1).then(function (e) {
                         mypageLog("交换物品:" + item.exchange_items[0].name + "*" +
                             item.exchange_items[0].required_num + " -> " + item.name + "*1");
                         batchExchange(itemArr);
@@ -2782,7 +2787,7 @@
         function createInfoBtn() {
             var infoBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>日版信息</button>");
             secondLevelMenuDiv.append(infoBtn);
-            infoBtn.click(function() {
+            infoBtn.click(function () {
                 showInfo();
             });
 
@@ -2792,7 +2797,7 @@
         function createLocalizeInfoBtn() {
             var lclzInfoBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>美版信息</button>");
             secondLevelMenuDiv.append(lclzInfoBtn);
-            lclzInfoBtn.click(function() {
+            lclzInfoBtn.click(function () {
                 showLocalizeInfo();
             });
 
@@ -2803,7 +2808,7 @@
         function createCalBtn() {
             var calBtn = $("<button type='button' class='btn' style='width:33%;white-space:nowrap'>首饰计算</button>");
             secondLevelMenuDiv.append(calBtn);
-            calBtn.click(function() {
+            calBtn.click(function () {
                 createCalContents();
             });
         };
@@ -2856,7 +2861,7 @@
         function createAccRemainExpCalBtn() {
             var accRemainExpBtn = $("<button type='button' class='btn' style='width:49%;white-space:nowrap'>首饰剩余经验</button>");
             secondLevelMenuDiv.append(accRemainExpBtn);
-            accRemainExpBtn.click(function() {
+            accRemainExpBtn.click(function () {
                 emptyLog();
                 //根据控件ID获取控件对象
                 var itemRaritySelect = document.getElementById("itemRaritySelect");
@@ -2882,7 +2887,7 @@
         function createAccBaseExpCalBtn() {
             var accBaseExpBtn = $("<button type='button' class='btn' style='width:49%;white-space:nowrap'>首饰提供经验</button>");
             secondLevelMenuDiv.append(accBaseExpBtn);
-            accBaseExpBtn.click(function() {
+            accBaseExpBtn.click(function () {
                 emptyLog();
                 //根据控件ID获取控件对象
                 var itemRaritySelect = document.getElementById("itemRaritySelect");
@@ -2976,7 +2981,7 @@
             mainMenuDiv.append(debugBtn);
             var textArea = $("<textarea>");
             mainMenuDiv.append(textArea);
-            debugBtn.click(function() {
+            debugBtn.click(function () {
                 emptyLog();
                 var obj = window.kh;
                 textArea.append(JSON.stringify(window.kh.Api));
