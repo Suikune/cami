@@ -1911,12 +1911,14 @@
                             var resultItem = {};
                             info.raidUnverifiedList.data.map(item => {
                                 kh.createInstance("apiABattles").getBattleResult(item.a_battle_id, item.quest_type).then(function (e) {
-                                    const result = e.body;
-                                    if (resultItem[result.items_gained.name]) {
-                                        resultItem[result.items_gained.name] += result.items_gained.amount;
-                                    } else {
-                                        resultItem[result.items_gained.name] = result.items_gained.amount;
-                                    }
+                                    const result = e.body.items_gained;
+                                    result.map(i=>{
+                                        if (resultItem[i.name]) {
+                                            resultItem[i.name] += i.amount;
+                                        } else {
+                                            resultItem[i.name] = i.amount;
+                                        }
+                                    })
                                     count++;
                                     if (count == info.raidUnverifiedList.data.length) {
                                         info.raidUnverifiedList.data = [];
