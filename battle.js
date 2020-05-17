@@ -1802,6 +1802,10 @@ function hpPercent(n) {
     return a && a.hp / a.maxHp * 100;
 }
 
+function minHpPercent() {
+	return aliveCharacters().map(t => t.hp / t.maxHp * 100).reduce((a, b) => Math.min(a, b), 100)
+}
+
 function lostHP(n) {
     let c = getCharacter(n);
     return c && (c.maxHp - c.hp);
