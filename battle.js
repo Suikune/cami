@@ -23,6 +23,7 @@ var auto_post_help_request = true; // Auto sends help request to union when ente
 var auto_post_stamp = true;
 var auto_exit_won_battle = true;
 var auto_exit_lost_raid = true;
+var auto_exit_lose_battle = true;
 var auto_exit_timed_out_raid = true;
 var display_hp_numbers = true; // Display the enemy's hp number in their hp bar
 var display_para_timer = true; // Displays a timer on paralyse duration during UE
@@ -254,6 +255,8 @@ var status_effect_ids = {
     recovery_limit_buff: 32,
     block_affliction: 47,
     paralyse: 62,
+    rampaging: 78,
+    zeal: 90,
     pluto_blocks: 95,
     fire_attack_buff: {
         a: 101,
@@ -317,15 +320,20 @@ var status_effect_ids = {
     light_resist_debuff: 123,
     dark_resist_debuff: 124,
     barrier_buff: 138,
+    burst_cap_buff: 152,
     arianrod_arrow: 161,
     fortitude: 163,
     vigoras: 176,
     nike_talisman: 177,
     takeminakata_sword: 182,
     metatron_countdown: 210,
+    null_recoil: 228,
     lugh_burst_buff: 234,
     azazel_burst_buff: 278,
     lancer_form: 281,
+    crit_buff: 139, // 170
+    lakshmi_erosion: 205,
+    raphael_burst_buff: 242,
 };
 
 var summon_buffs = [
@@ -431,6 +439,7 @@ var self_bg_up_buffs_data = [
     ["Groom wrap", "Chernobog", 30],
     ["Grim Reaper", "Thanatos", 25],
     ["Grim Reaper", "Thanatos [Awakened]", 25],
+    ["Lightning Missile", "Brahma [Awakened]", 20],
 ];
 
 var party_bg_up_buff_data = [
@@ -480,29 +489,38 @@ var bg_up_buffs = [
     [anytime_burst_bg_up_buffs, () => !saveForFullBurst()],
 ];
 
-var party_zeal_buffs = [
-    ["Beat Raidenschaft", shouldUsePartyZeal(10, 5)],
-    ["Cheer", shouldUsePartyZeal(10, 4)],
-    ["Dreams of Passion", shouldUsePartyZeal(10, 5)],
-    ["Jack O'Lantern", shouldUsePartyZeal(5, 2)],
-    ["Risen Sound", shouldUsePartyZeal(10, 4)],
-    ["Shurez hand", shouldUsePartyZeal(10, 5)],
-    ["Sponsored Love Dance", shouldUsePartyZeal(10, 5)],
-    ["Windshear Yorti", shouldUsePartyZeal(10, 2.5)],
-    ["Yule Goat", shouldUsePartyZeal(5, 2)],
-    ["Kinshi", shouldUsePartyZeal(5, 2)],
+var party_zeal_buffs_data = [
+    ["Beat Raidenschaft", 10, 5],
+    ["Cheer", 10, 4],
+    ["Dreams of Passion", 10, 5],
+    ["Jack O'Lantern", 5, 2],
+    ["Risen Sound", 10, 4],
+    ["Shurez hand", 10, 5],
+    ["Sponsored Love Dance", 10, 5],
+    ["Windshear Yorti", 10, 2.5],
+    ["Yule Goat", 5, 2],
+    ["Kinshi", 5, 2],
+    ["Psychadelic Singing", 10, 10],
 ];
 
-var party_barrier_buffs = [
-    ["Hard Faculty", shouldUsePartyBarrier(1000)],
-    ["Thunder Bolt Wall", shouldUsePartyBarrier(1000)],
-    ["Catafigio Geros", shouldUsePartyBarrier(800)],
-    ["Size Expanse", shouldUsePartyBarrier(800)],
-    ["Amaltheia", shouldUsePartyBarrier(750)],
-    ["Python", shouldUsePartyBarrier(750)],
-    ["Tiamat", shouldUsePartyBarrier(750)],
-    ["Phul", shouldUsePartyBarrier(1600)],
+var party_zeal_buffs = party_zeal_buffs_data.map(t => 
+	[t[0], () => someCharDontHave("zeal")]
+);
+
+var party_barrier_buffs_data = [
+    ["Hard Faculty", 1000],
+    ["Thunder Bolt Wall", 1000],
+    ["Catafigio Geros", 800],
+    ["Size Expanse", 800],
+    ["Amaltheia", 750],
+    ["Python", 750],
+    ["Tiamat", 750],
+    ["Phul", 1600],
 ];
+
+var party_barrier_buffs = party_barrier_buffs_data.map(t => 
+	[t[0], () => someCharDontHave("barrier_buff")]
+);
 
 var rage_buffs = [
     "Dock Flood",
@@ -527,7 +545,79 @@ var ammo_buffs = [
     "Light Fringes", ["Amphael Giazza", () => playerSELevel(getCharacter("Pluto"), "pluto_blocks") == 0],
 ];
 
+var double_attack_buffs = [
+    ["Adramelech", () => someCharDontHave("double_attack_buff", "sb")],
+    ["Garuda", () => someCharDontHave("double_attack_buff", "sb")],
+    ["Thunderbird", () => someCharDontHave("double_attack_buff", "sb")],
+    ["Delphyne", () => someCharDontHave("double_attack_buff", "sb")],
+	"Power Injection",
+	"Orlean Call",
+	"Prosperous",
+	"Reinforcement",
+	"Zerres Sabbath",
+	"Valkyrie Assault",
+	"Early Vinata",
+	"Linen Roots",
+	"Scathach Charge",
+	"The Power of Love",
+	"Power of Love",
+	"Ezaforce Ane",
+	"Satanic Party",
+	"Holy Axel",
+	"Rotary Shank",
+	"Cosmic Power",
+	"Scintilating Summer",
+	"Holy Ascension",
+	"Succeed Death",
+	"Midovation Behind",
+	"King of Flies' Dignity",
+
+
+];
+
+var triple_attack_buffs = [
+    ["Managarmr", () => someCharDontHave("triple_attack_buff", "sb")],
+    ["Icarus", () => someCharDontHave("triple_attack_buff", "sb")],
+    ["Sandalphon", () => someCharDontHave("triple_attack_buff", "sb")],
+	"Stallion Gale",
+	"Ikki Tousen",
+	"Caracole",
+	"Critical Excess",
+	"Insane Shout",
+	"Flame Filling",
+	"Siren's Dance",
+	"Swift Flame Wheels",
+	"Burning Heart",
+	"Unite Enflame",
+	"Bubble Maquillage",
+	"Jor Helmand",
+	"Rocket Boost",
+	"Agile Step",
+	"Full Throttle",
+	"Tail Wind",
+	"Hiranyagarbha",
+	"Conceptive Thunder",
+	"Wei's March",
+	"Verte Gluck",
+	"Light Paw",
+	"Swift Matching",
+	"Valkyria Honor",
+	"Fall from Heaven",
+	"Whirling Insanity",
+	"Chemnostar Flush",
+	"Intent Grim",
+	"Instigate to Arms",
+	"Propel Armament",
+	"Cuchulainn Charge",
+	"Bhagavad Gita",
+	"Lightning Charge",
+
+];
+
 var buffs = [
+    ["Pluma Breeze",()=>hasBuff("Minerva","null_recoil", undefined, true) || curHPProp("Minerva") >= 0.7],
+    ["Superior Amicire",()=>hasBuff("Minerva","null_recoil", undefined, true) || curHPProp("Minerva") >= 0.7],
+    ["Anima Split",()=>hasBuff("Minerva","null_recoil", undefined, true) || curHPProp("Minerva") >= 0.7],
     ["Armed Transform" , ()=>!hasBuff("[Kaleidoscopic Flame Blade] Frey","lancer_form", undefined, true)],
     ["Provisional Forest", () => burstGauge("Shingen") >= 5],
     ["Insane Shout", () => false],
@@ -537,7 +627,11 @@ var buffs = [
     ["Samildanach", () => !isUsable("Fogablaigi"), () => curHPProp("Lugh") >= 0.6, () => hasBuff("Lugh", "lugh_burst_buff")],
     ["Storm Zeal", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
     ["Revitalize", () => hasBuff("Azazel [Awakened]", "azazel_burst_buff", undefined, true)],
+    ["Gold Wool Mystery", () => !isUsable("Earnest Tenacity"), () => !isUsable("Seris Break")],
+    ["Hour of the Overlord", () => !isUsable("Earnest Tenacity"), () => !isUsable("Seris Break"),() => !isUsable("Gold Wool Mystery")],
     [ammo_buffs],
+    [double_attack_buffs, () => !allCanBurst()],
+    [triple_attack_buffs, () => !allCanBurst()],
     "Indomitable", [bg_up_buffs],
     [party_zeal_buffs],
     [party_barrier_buffs],
@@ -722,6 +816,7 @@ var def_debuffs_when_running_out = [
 var dispel_abilities = [
     "Alfrodull",
     "Chaos Magic",
+    "Invincible Body",
     "Effect Absorb",
     "Fallen Abyss",
     "Force Seal",
@@ -823,7 +918,7 @@ var dmg_cut_buffs = [
     ["Para Mail", numParticipantsAtLeast(5)],
     ["Twelve Warriors", numParticipantsAtLeast(5)],
     ["Voice of the Gods", numParticipantsAtLeast(5)],
-
+    ["Illusion Flock", bigHitWithin(1)],
     ["Aurora Shelter", bigHitWithin(2)],
     ["Azim Ossi Leon", bigHitWithin(2)],
     ["Ballet Religio", bigHitWithin(3)],
@@ -878,6 +973,7 @@ var nullify_buffs = [
 var a_frame_def_buffs = [
     ["Cursed Canting Chains", bigHitWithin(3)],
     ["Ruthless Beauty", bigHitWithin(3)],
+    ["Guardian Wish", bigHitWithin(3)],
     ["Divine Solar Shield", bigHitWithin(3)],
     ["Dura Defense", bigHitWithin(3)],
     ["Sunwa Shield", bigHitWithin(3)],
@@ -937,6 +1033,7 @@ var dmg_reductions = [
 ];
 
 var party_cleanse_abilities = [
+    ["Pseudo-Lotus", () => shouldUsePartyHeal(2000, 5)],
     ["Sunlight Furnace", () => hasBuff("Sol [Awakened]", "recovery_limit_buff"), () => shouldUsePartyHeal(2000, 5)],
     ["Medical Check", () => hasBuff("Dian Cecht", "recovery_limit_buff")],
     "Behemoth",
@@ -951,6 +1048,7 @@ var party_cleanse_abilities = [
 
 var revives = [
     "Resuscitation",
+    "Archane Method"
 ];
 
 var self_heals_data = [
@@ -991,6 +1089,7 @@ var self_heals_data = [
 ];
 
 var single_heals_data = [
+    ["Remedy Player", 4000, 5],
     ["Evil Lightning Impact", 1000, 2], // Cleanse 1 Affliction for ally
     ["Holy Sheath's Ray", 1800, 6],
     ["Love Kiss", 1200, 5],
@@ -1008,12 +1107,16 @@ var self_heals = self_heals_data.map(t => [t[0], () => lostHP(t[1]) >= 0.75 * t[
 self_heals.push(["Innocent", () => curHP("Takeminakata") < 5000]);
 
 var single_heals = single_heals_data.map(t => [t[0], () => maxLostHP() >= 0.8 * t[1]].concat(t.slice(3)));
-single_heals.push(["bottle", shouldUseSingleHeal(0.4)]);
+single_heals.push(
+	["bottle", () => minHpPercent() <= 50],
+);
 
 // name, heal amount, cooldown
 var party_heals = [
     ["Hero's Salvation", () => hasBuff("Andromeda", "recovery_limit_buff"), () => shouldUsePartyHeal(2000, 5)],
+    ["Siberian Recovery", () => hasBuff("Asclepius", "recovery_limit_buff"), () => shouldUsePartyHeal(2400, 5)],
     ["Dark Harvest", () => hasBuff("Osiris", "recovery_limit_buff"), () => shouldUsePartyHeal(1500, 5)],
+    ["Siberian Recovery", numParticipantsAtLeast(5)],
     ["Hero's Salvation", numParticipantsAtLeast(5)],
     ["Healing Wave", numParticipantsAtLeast(5)],
     ["Cure Water", numParticipantsAtLeast(5)],
@@ -1045,6 +1148,7 @@ var party_heals = [
     ["Vitality", shouldUsePartyHeal(1000, 6)],
     ["Winds of Prosperity", shouldUsePartyHeal(500, 5)],
     ["Cleansing Flame", shouldUsePartyHeal(1500, 5)],
+    ["Pseudo-Lotus", shouldUsePartyHeal(1500,7)],
     ["medic", shouldUsePartyHeal(3300, 20)],
 ];
 
@@ -1091,6 +1195,10 @@ var stun_damages = [
 var damages = [
     "Holy Ascension",
     "Series Landing", ["Fogablaigi", () => !willBurst("Lugh")],
+    "Conceptive Thunder",
+    "Weakning Spark",
+    "Earnest Tenacity",
+    "Seris Break",
     [rage_damages, targetIsRaging()],
     [stun_damages, targetIsStunned()],
 ];
@@ -1120,7 +1228,7 @@ var rampage_buffs = [
     "Light Runaway",
     "Magical Mischief",
     "Mega Therion", ["Nandi", () => false],
-    ["Psychadelic Singing", shouldUsePartyZeal(10, 10)],
+    "Psychadelic Singing", // +10 BG, -10% HP
     "Thermal Frenzy",
     "Trans Berserk",
     "Tuela Ane",
@@ -1128,12 +1236,15 @@ var rampage_buffs = [
 ];
 
 var just_before_attack_abilities = [
-    ["Conceptive Thunder", () => true],
-    ["Weakning Spark", () => true],
+    "Conceptive Thunder",
+    "Weakning Spark",
+    "Earnest Tenacity",
+    "Seris Break",
     ["Exult Combat", () => false],
     ["Cremated Scream", () => hasBuff("[Emperor of Hell] Beelzebub", "block_affliction")],
     [paralyse_abilities],
-    [rampage_buffs, shouldUseRampage()],
+    "Gold Wool Mystery",
+    [rampage_buffs, () => !allCanBurst()],
 ];
 
 buffs.push({ colour: "yellow", exclude: [buffs, dmg_reductions, just_before_attack_abilities] });
@@ -1188,6 +1299,7 @@ var all_para_action = [
 
 var normal_actions = [
     [all_para_action, () => enemiesSEDur("paralyse") >= 3],
+    ["Tear Deviation", () => hpPercent("Tishtrya") <= 30],
     [buffs],
     [debuffs],
     [dmg_reductions],
@@ -1495,6 +1607,18 @@ function isUsable(n) {
     );
 }
 
+function cooldown(n) {
+	let turn;
+    aliveCharacters().forEach(c => {
+        bw.characterAbilityList[c.index].forEach((a, i) => {
+			if (a._abilityData.name.startsWith(n)) {
+				turn = parseInt(bw.characterPanelList[c.index]._statusPanel._turnNumbers[i].string.substring(5));    
+			}
+        });
+    });
+    return turn;
+}
+
 /*
 
 function simulateDamage(starting_hps, rate_of_damage, rate_of_heal) {
@@ -1657,7 +1781,7 @@ function shouldUseSingleHeal(threshold) {
 function shoulUseDispelAbilities() {
     return () => {
         try {
-            const abilityID = [5, 6, 7, 9, 13, 14, 15, 19, 21, 23, 24, 27, 35, 38, 58, 59, 75, 78, 84, 89, 101, 178, 215, 243, 295, 296, 303, 304, 305, 372, 40003, 40001, 40005];
+            const abilityID = [5, 6, 7, 9, 13, 14, 15, 19, 21, 23, 24, 27, 35, 38, 58, 59, 75, 78, 84, 89, 101, 178, 215, 243, 295, 296, 303, 304, 305, 372,407,402,406, 1020, 40003, 40001, 40005];
             const target = getTarget();
             if (bw.enemyStatusBarList[target])
                 return bw.enemyStatusBarList[target]._statusEffectIconHandler._statusEffectList.filter(e => abilityID.includes(e._id)).length > 0;
@@ -1743,20 +1867,6 @@ function has(obj) {
     }
     return true;
 }
-// +t BG, -u% hp
-function shouldUsePartyZeal(t, u) {
-    return () => {
-        return true;
-        // ...
-    }
-}
-
-function shouldUsePartyBarrier(x) {
-    return () => {
-        return someCharDontHave("barrier_buff");
-        // ...
-    }
-}
 
 function burstGauge(n) {
     let c = getCharacter(n);
@@ -1786,10 +1896,13 @@ function willBurst(n) {
     return saveForFullBurst() ? allCanBurst() : neededToBurst(n) == 0;
 }
 
-function numCanBurst(bgs, incs) {
+function numCanBurst(bgs, incs, fb) {
     let s = 0;
+    if(!fb){
+        fb = [100,100,100,100,100];
+    }
     for (let i = 0; i < bgs.length; i++) {
-        if (bgs[i] >= 100) {
+        if (bgs[i] >= fb[i]  && !hasBuff("rampaging")) {
             s++;
             for (let j = i + 1; j < bgs.length; j++) bgs[j] += incs[i];
         }
@@ -1808,7 +1921,8 @@ function allCanBurst() {
     let chars = aliveCharacters();
     let incs = chars.map(t => t.name == "Michael [Awakened]" ? 30 : 10);
     let bgs = chars.map(t => t._avatarData.burst);
-    return numCanBurst(bgs, incs) == chars.length;
+    let fbs = [100 , 90, 80, 70, 60];
+    return numCanBurst(bgs, incs,fbs) == chars.length;
 }
 
 // party BG buff allows more himes to burst
@@ -2516,6 +2630,19 @@ function overrideMethods() {
         insertBeforeMethod(kh.BattleCommand.Win, "run", () => true, function() {
             if (kh.createInstance("stage").isStageCleared()) this._showNextButton();
         });
+    }
+
+    // Auto exit lose battle
+    if (auto_exit_lose_battle) {
+        if (kh.createInstance("questInfo").getQuestType() !== "raid"){
+            insertBeforeMethod(kh.BattleCommand.Lose, "run", () => true, function() {
+                quest_id = kh.createInstance("questInfo").getQuestId();
+                quest_type = kh.createInstance("questInfo").getQuestType();
+                kh.createInstance("apiAQuests").giveupQuest(quest_id, quest_type);
+                kh.createInstance("router").navigate("quest/q_006");
+                return Q.resolve();
+            });
+        }
     }
 
     // Auto exit won raid
