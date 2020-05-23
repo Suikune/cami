@@ -12,9 +12,9 @@ var playSafe = !!settings.playSafe;
 
 var attack_delay = 500; // 300+ safe, lower maybe ban 
 var run_when_non_union = false;
-var use_speed_hacks = true;
+var use_speed_hacks = false; // wait for fix
 var skip_vs_boss_fight_animation = true;
-var skip_burst_animation = true;
+var skip_burst_animation = true; // wait for fix
 var skip_messages = true; // e.g. blah is raging, blah is stun
 var use_custom_AAB = true; // Uses abilities in a more intelligent order. Also uses summons and potions.
 var ascension = 80; // Your ascension bonus %. Needed by custom AAB to use heals more intelligently.
@@ -2435,12 +2435,12 @@ function overrideMethods() {
         t => t.cmd == "damage",
         t => t.cmd == "summon_damage",
     ];
-    if (skip_burst_animation) {
-        cmds_to_skip[0].push(t => t.cmd == "cutin");
-        cmds_to_skip[0].push(t => t.cmd == "burst");
-        cmds_to_convert[0].push(t => t.cmd == "damage" && t.animation_resource_type == "burst" && t.from == "player");
-        cmds_to_convert[0].push(t => t.cmd == "burst_streak");
-    }
+    // if (skip_burst_animation) {
+    //     cmds_to_skip[0].push(t => t.cmd == "cutin");
+    //     cmds_to_skip[0].push(t => t.cmd == "burst");
+    //     cmds_to_convert[0].push(t => t.cmd == "damage" && t.animation_resource_type == "burst" && t.from == "player");
+    //     cmds_to_convert[0].push(t => t.cmd == "burst_streak");
+    // }
     if (skip_messages) {
         cmds_to_skip[0].push(t => t.cmd == "message");
     }
@@ -2508,11 +2508,11 @@ function overrideMethods() {
         this.statusEffectData.animation_id = null;
     });
 
-    // Skip burst result animation
-    replaceMethod(kh.BattleCommand.BurstResult, "run", () => skip_burst_animation, function() {
-        this._playTotalAnimation(this.actionData.getTotalDamage());
-        return Q.resolve();
-    });
+    // // Skip burst result animation
+    // replaceMethod(kh.BattleCommand.BurstResult, "run", () => skip_burst_animation, function() {
+    //     this._playTotalAnimation(this.actionData.getTotalDamage());
+    //     return Q.resolve();
+    // });
 
     // Speedup set enemy charge animation
     replaceMethod(kh.BattleCommand.SetEnemyChargeTurn, "run", skipAnimation, function() {
